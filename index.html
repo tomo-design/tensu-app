@@ -101,6 +101,7 @@ button.busy::before{content:"";display:inline-block;width:14px;height:14px;margi
 .ln-f .m.tot b{font-size:20px;color:var(--acc)}
 .badge{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--dim);background:var(--card)}
 .badge.warn{border-color:var(--warn);color:var(--warn);background:rgba(217,119,6,.1)}.badge.ok{border-color:var(--ok);color:var(--ok)}
+.chips{display:flex;flex-direction:column;gap:8px;margin-top:10px}.chips button{text-align:left;border-radius:12px;padding:11px 14px;line-height:1.45}.chips button small{display:block;font-weight:500;color:var(--dim)}
 .empty{padding:22px 10px;text-align:center;color:var(--dim);border:1px dashed var(--line);border-radius:14px}
 /* 追加検索 */
 .addbox{position:relative}.addlist{position:absolute;z-index:6;left:0;right:0;background:var(--card);border:1px solid var(--line);border-radius:12px;max-height:280px;overflow:auto;box-shadow:var(--shadow);margin-top:4px}
@@ -218,6 +219,8 @@ body.mode-app .noserv-only{display:block}
   ・初回に Windows のファイアウォールの確認が出たら「プライベート ネットワーク」を許可してください。</p>
 </details>
 
+<div id="fromApp"></div>
+
 <section class="card">
   <div class="stephd"><span class="no">1</span><h2>車種を選ぶ<span class="sd">点数表の車種（型式・エンジン）</span></h2></div>
   <select id="selVeh"></select>
@@ -261,7 +264,7 @@ body.mode-app .noserv-only{display:block}
   <h3>交換部品・使用材料</h3>
   <textarea id="hParts" placeholder="1行に1件（例: エンジンオイル 20L）"></textarea>
   <label>備考・申し送り</label><textarea id="hNote"></textarea>
-  <div class="row" style="margin-top:12px"><button id="btnRematch" type="button" class="ghost">↻ もう一度、点数表と照合</button></div>
+  <div class="row" style="margin-top:12px"><button id="btnRematch" type="button" class="ghost">↻ もう一度、点数表と照合</button><button id="btnCopy" type="button" class="ghost">📋 カルテ用にコピー</button></div>
   <div id="saveMsg"></div>
 
   <div class="bar">
@@ -774,7 +777,7 @@ $("dataFile").onchange = async e => {
     dataMsg("読み込み中…（数秒かかります）");
     const d = await readDataFile(f);
     await idbSet("faines", { vehicles: d.vehicles, built: d.built, at: Date.now() });
-    V = d.vehicles; buildSel(); renderVehList(); updChip();
+    V = d.vehicles; buildSel(); renderVehList(); updChip(); showIncoming();
     dataMsg("読み込みました：<b>" + V.length + "</b> 車種。このままPC無しで使えます。", "ok");
   } catch (er) { dataMsg(esc(er.message || er), "err"); }
 };
@@ -805,7 +808,53 @@ async function probeServer() {
   } catch (e) {}
   document.body.classList.add("mode-app"); registerSW();
 }
-initData().then(probeServer);
+
+/* ========== メカノAIから車両を受け取る(型式をURLの#以降で受け取り、点数表の車種を選ぶ) ========== */
+function decodeIncoming() {
+  const m = location.hash.match(/[#&]v=([A-Za-z0-9_-]+)/); if (!m) return null;
+  try { return JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g, "+").replace(/_/g, "/"))))); } catch (e) { return null; }
+}
+let incoming = decodeIncoming();
+if (incoming) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }   // 再読み込みで二重に適用しない
+const normT = t => String(t || "").toUpperCase().replace(/[\s　]/g, "");
+const typeCode = t => { t = normT(t); const i = t.lastIndexOf("-"); return i >= 0 ? t.slice(i + 1) : t; };   // 例 QKG-CYL77A → CYL77A
+const baseEng = e => normT(e).replace(/[(（].*$/, "").replace(/-.*$/, "");                                   // 例 6WF1-TC → 6WF1
+function findCandidates(info) {
+  const code = typeCode(info.t), eng = baseEng(info.e); if (!code) return [];
+  let c = V.filter(v => { const vt = normT(v.type); return code === vt || code.startsWith(vt); });   // 点数表の型式(CYL77)で車検証の型式(CYL77A)の頭を照合
+  if (!c.length) return [];
+  const longest = Math.max.apply(null, c.map(v => v.type.length)); c = c.filter(v => v.type.length === longest);
+  if (eng) { const e2 = c.filter(v => baseEng(v.engine) === eng); if (e2.length) c = e2; }
+  return c;
+}
+function pickVehicle(id) { S.vid = id; $("selVeh").value = id; lsSet(LSK.veh, id); showVeh(); showIncoming(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+function showIncoming() {
+  const box = $("fromApp"); if (!incoming) { box.innerHTML = ""; return; }
+  const info = incoming, head = '<b>🚚 メカノAIから受け取りました</b><br>' + esc([info.n, info.t && "型式 " + info.t, info.e && "原動機 " + info.e].filter(Boolean).join(" ／ "));
+  if (!V.length) { box.innerHTML = '<div class="msg">' + head + '<br>点数表データがまだ読み込まれていません。「点数表データの読み込み」を済ませると、車種を自動で選びます。</div>'; return; }
+  const c = findCandidates(info);
+  if (c.length === 1) { if (S.vid !== c[0].id) { S.vid = c[0].id; $("selVeh").value = c[0].id; lsSet(LSK.veh, c[0].id); showVeh(); } box.innerHTML = '<div class="msg ok">' + head + '<br>→ 点数表: <b>' + esc(vLabel(c[0])) + '</b> を選びました。</div>'; }
+  else if (c.length > 1) {
+    box.innerHTML = '<div class="msg">' + head + '<br>同じ型式でも仕様違いの点数表があります。該当するものを選んでください。' +
+      '<div class="chips">' + c.map(v => '<button type="button" data-pick="' + esc(v.id) + '"' + (S.vid === v.id ? ' class="pri"' : "") + '>' + esc(v.car + " " + v.type + " / " + v.engine) + '<small>' + esc(v.note || "（備考なし）") + '</small></button>').join("") + '</div></div>';
+  } else box.innerHTML = '<div class="msg err">' + head + '<br>この型式の点数表が、読み込み済みのデータに見つかりません。下の「車種を選ぶ」で手動で選ぶか、FAINESから点数表を追加してください。</div>';
+}
+$("fromApp").addEventListener("click", e => { const b = e.target.closest("[data-pick]"); if (b) pickVehicle(b.dataset.pick); });
+
+/* ========== カルテ用にコピー(メカノAIのカルテ「作業内容」へ貼る用) ========== */
+$("btnCopy").onclick = async () => {
+  const v = veh(); if (!v || !S.lines.length) { $("saveMsg").innerHTML = '<div class="msg err">コピーする作業がありません。</div>'; return; }
+  let tot = 0;
+  const rows = S.lines.map(l => { const r = v.rows[l.idx], pt = calcLine(l); tot += pt || 0; return r.n + (l.variant ? "（" + l.variant + "）" : "") + (l.qty !== 1 ? " ×" + l.qty : "") + "　" + fmt(pt) + "点"; });
+  const text = rows.join("\n") + "\n合計 " + fmt(tot) + "点" + (rate() ? "（工賃 " + yen(tot * rate()) + "）" : "");
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {
+    try { const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); ok = document.execCommand("copy"); ta.remove(); } catch (e2) {}
+  }
+  $("saveMsg").innerHTML = ok ? '<div class="msg ok">コピーしました。メカノAIのカルテの「作業内容」に貼り付けてください。</div>' : '<div class="msg err">コピーできませんでした。手で選択してコピーしてください。<pre style="white-space:pre-wrap">' + esc(text) + '</pre></div>';
+};
+
+initData().then(() => { showIncoming(); return probeServer(); });
 </script>
 </body>
 </html>
