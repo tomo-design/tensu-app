@@ -4,138 +4,261 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#0b1f3a">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f4f1ea">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="作業点数">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
 <title>作業点数（個人用）</title>
 <style>
-:root{--bg:#f1f4fa;--card:#fff;--card2:#f7f9fd;--ink:#0f1b2d;--dim:#64748b;--line:#e3e8f1;--acc:#2563eb;--acc2:#0ea5e9;--ok:#059669;--warn:#d97706;--bad:#dc2626;
-  --shadow:0 1px 2px rgba(15,27,45,.05),0 10px 28px rgba(15,27,45,.07);--r:16px}
-@media (prefers-color-scheme:dark){:root{--bg:#0a1120;--card:#121c2f;--card2:#0e1728;--ink:#e8eef8;--dim:#94a3b8;--line:#22314b;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35)}}
+:root{
+  color-scheme:light;
+  --paper:#f4f1ea;--card:#fff;--ink:#17202e;--ink2:#4a5363;--mute:#8b93a1;
+  --line:#e6e1d4;--line2:#f1ede3;--field:#faf8f3;
+  --acc:#e4472b;--acc-d:#c93a1f;--acc-t:#fdece7;
+  --hl:#ffe27a;
+  --ok:#1d8559;--ok-t:#e6f5ed;--warn:#a96a0b;--warn-t:#fff3d9;--bad:#bb2f22;--bad-t:#fdebe8;--info:#2b5fa8;--info-t:#e8f0fb;
+  --r:18px;--sh:0 1px 0 rgba(23,32,46,.04),0 6px 22px rgba(23,32,46,.06);
+  --num:"Manrope","Zen Kaku Gothic New","Hiragino Sans","Yu Gothic UI",sans-serif;
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Noto Sans JP","Meiryo",system-ui,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
-a{color:var(--acc)}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 "Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Noto Sans JP","Meiryo",system-ui,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+body.lock{overflow:hidden}
+a{color:var(--info)}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.i{width:1.25em;height:1.25em;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.24em;flex:0 0 auto}
+
 /* ヘッダー */
-.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:12px 16px calc(12px) 16px;padding-top:max(12px,env(safe-area-inset-top));color:#fff;
-  background:linear-gradient(135deg,#0b1f3a 0%,#143a8c 55%,#0ea5e9 130%);box-shadow:0 6px 20px rgba(11,31,58,.28)}
-.brand{display:flex;align-items:center;gap:12px;flex:1 1 auto;min-width:0}
-.logo{flex:0 0 auto;width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;color:#fff;
-  background:linear-gradient(145deg,rgba(255,255,255,.28),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
-.ttl{font-size:18px;font-weight:800;letter-spacing:.04em;line-height:1.2}
-.sub{font-size:11.5px;opacity:.82;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top{position:sticky;top:0;z-index:20;background:rgba(244,241,234,.95);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.topin{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 16px}
+.brand{display:flex;align-items:center;gap:11px;flex:1 1 auto;min-width:0}
+.hanko{flex:0 0 auto;width:38px;height:38px;border-radius:9px;background:var(--acc);color:#fff;font-weight:900;font-size:23px;line-height:38px;text-align:center;transform:rotate(-4deg);box-shadow:inset 0 0 0 2px rgba(255,255,255,.55),0 3px 8px rgba(228,71,43,.28)}
+.ttl{font-size:18px;font-weight:900;letter-spacing:.06em;line-height:1.15}
+.sub{font-size:11px;color:var(--mute);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topr{display:flex;align-items:center;gap:8px;flex:0 0 auto}
-.chip{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);white-space:nowrap}
-.chip.ng{background:rgba(251,191,36,.25);border-color:rgba(251,191,36,.7)}
-.ico{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1}
-main{max-width:860px;margin:0 auto;padding:16px 14px 110px}
-/* カード */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
-details.card>summary{list-style:none;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:8px;padding:0}
-details.card>summary::-webkit-details-marker{display:none}
-details.card>summary::after{content:"▾";margin-left:auto;color:var(--dim);transition:transform .15s}
-details.card:not([open])>summary::after{transform:rotate(-90deg)}
-details.card[open]>summary{margin-bottom:12px}
-.stephd{display:flex;align-items:center;gap:10px;margin:0 0 12px}
-.stephd .no{flex:0 0 auto;width:28px;height:28px;border-radius:10px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(37,99,235,.3)}
-.stephd h2{margin:0;font-size:16px;font-weight:800;line-height:1.3}
-.stephd .sd{font-size:12px;color:var(--dim);font-weight:500;display:block}
-h3{margin:18px 0 8px;font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
-h3 small{font-weight:500;color:var(--dim);font-size:12px}
-label{display:block;font-size:12px;color:var(--dim);font-weight:700;margin:10px 0 4px}
-input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;font:inherit;background:var(--card2);color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
-textarea{min-height:68px;resize:vertical}
-input[type=checkbox]{width:auto;accent-color:var(--acc)}
-.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 150px;min-width:0}
-.hint{font-size:12px;color:var(--dim);line-height:1.6}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--ok-t);color:var(--ok);white-space:nowrap}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.chip.ng{background:var(--warn-t);color:var(--warn)}
+.ib{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.ib .i{width:20px;height:20px}
+main{max-width:760px;margin:0 auto;padding:18px 16px 40px}
+
+/* ステップ */
+.step{margin:0 0 30px}
+.sh{display:flex;align-items:baseline;gap:12px;margin:0 2px 12px}
+.sn{font-family:var(--num);font-weight:800;font-size:13px;letter-spacing:.14em;color:var(--acc);flex:0 0 auto}
+.sh h2{margin:0;font-size:21px;font-weight:900;line-height:1.3;letter-spacing:.02em}
+.sh p{margin:2px 0 0;font-size:12.5px;color:var(--mute);line-height:1.55;font-weight:500}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:18px}
+.card+.card{margin-top:12px}
+.card h3{margin:0 0 10px;font-size:15px;font-weight:900;display:flex;align-items:center;gap:8px}
+.card h3 .i{color:var(--acc)}
+h4{margin:22px 0 8px;font-size:14px;font-weight:900;display:flex;align-items:center;gap:8px}
+h4::after{content:"";flex:1;height:1px;background:var(--line)}
+label{display:block;font-size:12px;color:var(--ink2);font-weight:700;margin:12px 0 5px;letter-spacing:.02em}
+input,select,textarea{width:100%;padding:12px 13px;border:1.5px solid var(--line);border-radius:12px;font:inherit;background:var(--field);color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s,background .15s;-webkit-appearance:none;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238b93a1' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
+input:focus,select:focus,textarea:focus{border-color:var(--ink);background:#fff;box-shadow:0 0 0 4px rgba(23,32,46,.08)}
+textarea{min-height:76px;resize:vertical}
+input[type=checkbox]{width:20px;height:20px;padding:0;border-radius:6px;border:2px solid #c9c2ae;background:#fff;flex:0 0 auto;cursor:pointer;box-shadow:none}
+input[type=checkbox]:checked{background:var(--acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/15px no-repeat;border-color:var(--acc)}
+input[type=checkbox]:focus{box-shadow:0 0 0 4px rgba(228,71,43,.15)}
+input[type=file]{padding:9px;background:#fff}
+input[type=file]::file-selector-button{font:inherit;font-weight:700;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 13px;margin-right:10px;cursor:pointer}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.grid2 .w2{grid-column:1/-1}
+.hint{font-size:12.5px;color:var(--mute);line-height:1.7}
+.sep{height:1px;background:var(--line);margin:16px 0;border:0}
+
 /* ボタン */
-button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:600;transition:transform .08s,box-shadow .15s,opacity .15s}
+button{font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:700;transition:transform .08s,background .15s,border-color .15s,opacity .15s}
 button:active{transform:scale(.98)}
-button.pri{background:linear-gradient(135deg,var(--acc),#1d4ed8);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(37,99,235,.32)}
-button.cta{background:linear-gradient(135deg,#f59e0b,#ea580c);border-color:transparent;color:#fff;font-weight:800;box-shadow:0 8px 20px rgba(234,88,12,.32);padding:13px 18px;font-size:16px}
-button.sm{padding:5px 11px;font-size:13px;border-radius:10px}
+button:hover{border-color:#cfc8b6}
+button.pri{background:var(--ink);border-color:var(--ink);color:#fff}
+button.pri:hover{background:#0c121b}
+button.cta{width:100%;background:var(--acc);border-color:var(--acc);color:#fff;font-weight:900;font-size:17px;letter-spacing:.04em;padding:15px 18px;border-radius:14px;box-shadow:0 8px 20px rgba(228,71,43,.28)}
+button.cta:hover{background:var(--acc-d);border-color:var(--acc-d)}
+button.sm{padding:6px 12px;font-size:13px;border-radius:10px;white-space:nowrap}
 button.ghost{background:transparent}
-button:disabled{opacity:.55;cursor:default;box-shadow:none}
-button.busy::before{content:"";display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+button.txt{border:0;background:transparent;color:var(--ink2);padding:6px 8px;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+button:disabled{opacity:.5;cursor:default;box-shadow:none}
+button.busy::before{content:"";width:15px;height:15px;border:2.5px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+button.ghost.busy::before,button.sm.busy::before{border-color:rgba(23,32,46,.25);border-top-color:var(--ink)}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* 写真タイル */
-.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:18px 10px;border:2px dashed var(--line);border-radius:14px;background:var(--card2);color:var(--ink);font-size:14px;font-weight:700}
-.tile .big{font-size:30px;line-height:1}
-.tile.on{border-color:var(--acc);background:rgba(37,99,235,.08);color:var(--acc)}
-.thumbs{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
-.thumbs div{position:relative}.thumbs img{height:96px;border-radius:12px;border:1px solid var(--line);display:block;box-shadow:var(--shadow)}
-.thumbs button{position:absolute;top:-6px;right:-6px;width:24px;height:24px;padding:0;border-radius:50%;line-height:1;font-size:15px;background:var(--card);box-shadow:var(--shadow)}
-/* 取り込み・ドロップ */
-.drop{border:2px dashed var(--line);border-radius:14px;padding:22px 14px;text-align:center;color:var(--dim);background:var(--card2)}.drop.over{border-color:var(--acc);background:rgba(37,99,235,.08);color:var(--acc)}
-.vrow{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}.vrow .t{flex:1 1 auto;min-width:0}
-.code{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12.5px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btnrow>button.ghost:not(.sm){flex:1 1 150px}
+
+/* はじめに */
+.start{border:1.5px dashed #d9d2bf;background:#fffdf7;box-shadow:none;margin-bottom:26px}
+.start h3{margin:0 0 4px;font-size:17px}
+.start .chk{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid var(--line2);font-weight:700}
+.start .chk:first-of-type{margin-top:8px}
+.start .dot{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:2px solid #d9d2bf;display:flex;align-items:center;justify-content:center;color:#fff}
+.start .chk.done .dot{background:var(--ok);border-color:var(--ok)}
+.start .chk.done .dot .i{width:15px;height:15px;stroke-width:3}
+.start .chk:not(.done) .dot .i{display:none}
+.start .chk small{display:block;color:var(--mute);font-weight:500;font-size:12px;line-height:1.5}
+.start .chk>div{flex:1 1 auto;min-width:0}.start .chk .go{margin-left:auto;flex:0 0 auto}
+
+/* 写真 */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{flex-direction:column;gap:10px;padding:22px 10px 18px;border:1.5px solid var(--line);border-radius:16px;background:var(--field);font-size:14.5px;font-weight:700;color:var(--ink)}
+.tile .ic{width:54px;height:54px;border-radius:50%;background:var(--acc-t);color:var(--acc);display:flex;align-items:center;justify-content:center}
+.tile .ic .i{width:26px;height:26px}
+.tile:hover{border-color:var(--acc);background:#fff}
+.thumbs{display:flex;gap:10px;flex-wrap:wrap;margin:0}
+.thumbs:not(:empty){margin:14px 0 2px}
+.thumbs div{position:relative}
+.thumbs img{height:92px;border-radius:12px;border:1px solid var(--line);display:block;box-shadow:var(--sh)}
+.thumbs button{position:absolute;top:-8px;right:-8px;width:26px;height:26px;padding:0;border-radius:50%;background:var(--ink);border-color:var(--ink);color:#fff}
+.thumbs button .i{width:13px;height:13px;stroke-width:3}
+.runst{text-align:center;margin-top:10px;font-size:13px;color:var(--ink2);min-height:0}
+.runst:empty{display:none}
+
 /* メッセージ */
-.msg{padding:11px 13px;border-radius:12px;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.35);font-size:13px;margin:10px 0;line-height:1.65}
-.msg.err{background:rgba(220,38,38,.09);border-color:rgba(220,38,38,.4);color:var(--bad)}.msg.ok{background:rgba(5,150,105,.1);border-color:rgba(5,150,105,.4);color:var(--ok)}
+.msg{padding:12px 14px;border-radius:12px;background:var(--warn-t);border-left:4px solid #e0a436;font-size:13.5px;margin:12px 0;line-height:1.7;color:#5b3d06}
+.msg.err{background:var(--bad-t);border-left-color:var(--bad);color:#6d1a12}
+.msg.ok{background:var(--ok-t);border-left-color:var(--ok);color:#0f4f35}
+.msg.info{background:var(--info-t);border-left-color:var(--info);color:#173a69}
+.msg b{font-weight:900}
+.msg pre{margin:6px 0 0;font:inherit}
+
 /* 作業カード */
-.lines{display:flex;flex-direction:column;gap:10px}
-.ln{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card2)}
+.lines{display:flex;flex-direction:column;gap:12px}
+.ln{position:relative;border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px 18px;background:#fff;box-shadow:var(--sh);overflow:hidden}
+.ln::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#b9c0cc}
+.ln.s-附加::before{background:#4f8fe0}
+.ln.s-定期::before{background:#2fa56e}
+.ln.s-一般::before{background:#b9c0cc}
 .ln-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ln-h .cd{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:13px;color:var(--acc);background:rgba(37,99,235,.1);border-radius:8px;padding:1px 8px}
-.ln-h .x{margin-left:auto;width:30px;height:30px;padding:0;border-radius:10px;line-height:1;font-size:16px;background:transparent;color:var(--dim)}
-.ln-t{font-weight:700;margin:6px 0 2px;line-height:1.5;word-break:break-word}
-.ln .src{font-size:12px;color:var(--dim)}
-.ln select{margin-top:6px;padding:8px 10px;font-size:14px}
-.ln select.sec{width:auto;margin:0;padding:3px 8px;font-size:13px;border-radius:9px}
-.ln .opt{display:inline-flex;align-items:center;gap:6px;margin:8px 12px 0 0;font-size:13px;font-weight:500;color:var(--ink)}
-.ln-f{display:flex;align-items:center;gap:14px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);flex-wrap:wrap}
-.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
-.qty button{border:none;border-radius:0;padding:6px 13px;font-size:18px;line-height:1;background:transparent}
-.qty input{width:50px;border:none;border-radius:0;text-align:center;padding:7px 0;background:transparent;box-shadow:none}
+.ln-h .cd{font-family:var(--num);font-weight:800;font-size:12.5px;color:var(--ink2);background:var(--line2);border-radius:7px;padding:1px 8px;letter-spacing:.02em}
+.ln-h .x{margin-left:auto;width:32px;height:32px;padding:0;border-radius:10px;border-color:transparent;background:transparent;color:var(--mute)}
+.ln-h .x:hover{background:var(--bad-t);color:var(--bad)}
+.ln-t{font-weight:900;font-size:16.5px;margin:7px 0 2px;line-height:1.5;word-break:break-word}
+.ln .src{font-size:12px;color:var(--mute);display:flex;gap:6px;align-items:baseline}
+.ln .src .i{width:12px;height:12px;transform:translateY(1px)}
+.ln select{margin-top:8px;padding:9px 34px 9px 11px;font-size:14px}
+.ln select.sec{width:auto;margin:0;padding:3px 26px 3px 9px;font-size:12.5px;font-weight:700;border-radius:999px;background-position:right 9px center;background-size:10px}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ln .opt{display:inline-flex;align-items:center;gap:9px;margin:0;padding:8px 13px;border:1.5px solid var(--line);border-radius:14px;line-height:1.45;font-size:13px;font-weight:600;color:var(--ink);background:var(--field);cursor:pointer}
+.ln .opt:has(input:checked){border-color:var(--acc);background:var(--acc-t)}
+.ln-f{display:flex;align-items:flex-end;gap:16px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);flex-wrap:wrap}
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--field)}
+.qty button{border:none;border-radius:0;padding:0;width:38px;height:38px;background:transparent;font-size:18px}
+.qty button .i{width:16px;height:16px;stroke-width:2.4}
+.qty input{width:46px;border:none;border-radius:0;text-align:center;padding:8px 0;background:transparent;box-shadow:none;font-family:var(--num);font-weight:800;font-size:16px}
 .ln-f .m{display:flex;flex-direction:column;line-height:1.25}
-.ln-f .m span{font-size:11px;color:var(--dim)}
-.ln-f .m b{font-size:16px}
+.ln-f .m span{font-size:11px;color:var(--mute);font-weight:700;letter-spacing:.05em}
+.ln-f .m b{font-family:var(--num);font-size:17px;font-weight:800}
 .ln-f .m.tot{margin-left:auto;text-align:right}
-.ln-f .m.tot b{font-size:20px;color:var(--acc)}
-.badge{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--dim);background:var(--card)}
-.badge.warn{border-color:var(--warn);color:var(--warn);background:rgba(217,119,6,.1)}.badge.ok{border-color:var(--ok);color:var(--ok)}
-.chips{display:flex;flex-direction:column;gap:8px;margin-top:10px}.chips button{text-align:left;border-radius:12px;padding:11px 14px;line-height:1.45}.chips button small{display:block;font-weight:500;color:var(--dim)}
-.empty{padding:22px 10px;text-align:center;color:var(--dim);border:1px dashed var(--line);border-radius:14px}
-/* 追加検索 */
-.addbox{position:relative}.addlist{position:absolute;z-index:6;left:0;right:0;background:var(--card);border:1px solid var(--line);border-radius:12px;max-height:280px;overflow:auto;box-shadow:var(--shadow);margin-top:4px}
-.addlist div{padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13.5px}.addlist div:hover{background:rgba(37,99,235,.08)}
-/* 固定の合計バー */
-.bar{position:sticky;bottom:max(10px,env(safe-area-inset-bottom));z-index:15;margin-top:16px;padding:12px 14px;border-radius:18px;color:#fff;background:linear-gradient(135deg,#0b1f3a,#143a8c);box-shadow:0 14px 34px rgba(11,31,58,.4);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.bar .bt{flex:1 1 150px;display:flex;flex-direction:column;line-height:1.3}
-.bar .bt small{font-size:11px;opacity:.78}
-.bar .bt b{font-size:24px;letter-spacing:.01em}
-.bar .bt .w{font-size:13px;opacity:.95}.bar .bt .w b{font-size:15px}
+.ln-f .m.tot b{font-size:26px;line-height:1.1;background:linear-gradient(transparent 62%,var(--hl) 62%);padding:0 4px}
+.badge{display:inline-block;font-size:11.5px;font-weight:800;padding:1px 9px;border-radius:999px;background:var(--line2);color:var(--ink2)}
+.badge.warn{background:var(--warn-t);color:var(--warn)}
+.badge.ok{background:var(--ok-t);color:var(--ok)}
+.chips{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.chips button{justify-content:flex-start;text-align:left;border-radius:12px;padding:11px 14px;line-height:1.45;flex-direction:column;align-items:flex-start;gap:0}
+.chips button.pri small{color:#cdd3dc}
+.chips button small{font-weight:500;color:var(--mute)}
+.empty{padding:26px 12px;text-align:center;color:var(--mute);border:1.5px dashed var(--line);border-radius:14px;background:var(--field)}
+
+/* 作業の追加検索 */
+.addbox{position:relative;margin-top:14px}
+.addbox .si{position:relative}
+.addbox .si .i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--mute);pointer-events:none}
+.addbox .si input{padding-left:40px}
+.addlist{position:absolute;z-index:6;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:14px;max-height:300px;overflow:auto;box-shadow:0 14px 34px rgba(23,32,46,.18);margin-top:6px}
+.addlist div{padding:11px 14px;border-bottom:1px solid var(--line2);cursor:pointer;font-size:13.5px}
+.addlist div:hover{background:var(--acc-t)}
+
+/* 合計バー */
+.bar{position:sticky;bottom:max(12px,env(safe-area-inset-bottom));z-index:15;margin-top:18px;padding:12px 14px 12px 18px;border-radius:20px;background:#fff;border:1px solid #d9d2bf;box-shadow:0 -2px 0 rgba(255,255,255,.9),0 18px 40px rgba(23,32,46,.2);display:flex;align-items:center;gap:12px}
+.bar .bt{flex:1 1 auto;display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.bar .bt small{font-size:11px;color:var(--mute);font-weight:800;letter-spacing:.1em}
+.bar .bt .big{font-family:var(--num);font-weight:800;font-size:30px;letter-spacing:-.02em;line-height:1.15}
+.bar .bt .big em{font-style:normal;font-family:inherit;font-size:14px;font-weight:700;margin-left:3px;letter-spacing:0}
+.bar .bt .w{font-size:12.5px;color:var(--ink2);font-weight:600}
+.bar .bt .w b{font-family:var(--num);font-weight:800;font-size:14px;color:var(--ink)}
 .bar .ba{display:flex;gap:8px;flex:0 0 auto}
-.bar button{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.14);color:#fff;box-shadow:none}
-.bar button.pri{background:linear-gradient(135deg,#38bdf8,#2563eb);border-color:transparent}
+.bar button{padding:11px 16px;min-height:46px}
+
 /* 保存済み */
-.saved .it{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.saved .it:last-child{border-bottom:none}.saved .it .t{flex:1 1 200px;min-width:0}
-.saved .it .pts{font-weight:800;color:var(--acc)}
+.saved .it{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.saved .it:last-of-type{border-bottom:none}
+.saved .it .t{flex:1 1 220px;min-width:0;line-height:1.5}
+.saved .it .t small{display:block;color:var(--mute);font-size:12px}
+.saved .it .pts{font-family:var(--num);font-weight:800;font-size:17px;background:linear-gradient(transparent 62%,var(--hl) 62%);padding:0 3px}
+.saved .it .acts{display:flex;gap:6px}
+
+/* 設定シート */
+.sheet{position:fixed;inset:0;z-index:50;display:none}
+.sheet.open{display:block}
+.sheet .bg{position:absolute;inset:0;background:rgba(23,32,46,.4);animation:fade .2s}
+.sheet .pn{position:absolute;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--paper);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 40px;animation:slide .24s cubic-bezier(.2,.8,.2,1);box-shadow:-20px 0 50px rgba(23,32,46,.25)}
+.sheet .ph{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;margin:0 -16px 16px;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));background:rgba(244,241,234,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.sheet .ph h2{margin:0;font-size:19px;font-weight:900;flex:1}
+@keyframes fade{from{opacity:0}}
+@keyframes slide{from{transform:translateX(40px);opacity:0}}
+.sheet .card{padding:16px}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:12.5px}
+.drop{border:1.5px dashed #cfc8b6;border-radius:14px;padding:22px 14px;text-align:center;color:var(--ink2);background:var(--field);font-size:13.5px}
+.drop.over{border-color:var(--acc);background:var(--acc-t);color:var(--acc)}
+.vrow{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.vrow .t{flex:1 1 auto;min-width:0}
+details.sub2{margin-top:12px}
+details.sub2>summary{cursor:pointer;font-weight:800;font-size:14px;list-style:none;display:flex;align-items:center;gap:6px}
+details.sub2>summary::-webkit-details-marker{display:none}
+details.sub2>summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--ink2);border-bottom:2px solid var(--ink2);transform:rotate(-45deg);transition:transform .15s;margin-right:4px}
+details.sub2[open]>summary::before{transform:rotate(45deg)}
+.qrbox{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.qrbox canvas,.qrbox svg,.qrbox img{width:176px;height:176px;border-radius:12px;border:1px solid var(--line);background:#fff;padding:8px;flex:0 0 auto}
+.qrbox .qt{flex:1 1 180px;min-width:0}
+.pcode{font-family:var(--num);font-weight:800;font-size:24px;letter-spacing:.14em;margin:2px 0 6px}
+.prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:12px 0 4px}
+.prog i{display:block;height:100%;width:0;background:var(--acc);border-radius:99px;transition:width .15s}
+
+/* 受信オーバーレイ */
+.rx{position:fixed;inset:0;z-index:60;background:var(--paper);display:none;align-items:center;justify-content:center;padding:24px}
+.rx.open{display:flex}
+.rx .box{width:min(420px,100%);text-align:center}
+.rx .big{width:84px;height:84px;margin:0 auto 18px;border-radius:50%;background:var(--acc-t);color:var(--acc);display:flex;align-items:center;justify-content:center}
+.rx .big .i{width:38px;height:38px}
+.rx.done .big{background:var(--ok-t);color:var(--ok)}
+.rx.fail .big{background:var(--bad-t);color:var(--bad)}
+.rx h2{margin:0 0 6px;font-size:22px;font-weight:900}
+
+/* トースト */
+.toast{position:fixed;left:0;right:0;margin:0 auto;width:fit-content;bottom:max(22px,env(safe-area-inset-bottom));transform:translateY(30px);opacity:0;pointer-events:none;z-index:70;background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;font-size:14px;font-weight:700;transition:all .25s;max-width:calc(100% - 32px);text-align:center;box-shadow:0 12px 30px rgba(23,32,46,.3)}
+.toast.on{transform:translateY(0);opacity:1}
+
 /* モード切替(サーバー有無) */
 .srv-only,.noserv-only{display:none}
 body.mode-srv .srv-only{display:block}
 body.mode-app .noserv-only{display:block}
 #printSheet{display:none}
+#fromApp:not(:empty){margin-bottom:20px}
+
 @media (max-width:640px){
-  main{padding:12px 10px 110px}
-  .card{padding:14px;border-radius:14px}
-  input,select,textarea{font-size:16px}
+  main{padding:14px 12px 30px}
+  .topin{padding:9px 12px}
   .sub{display:none}
-  .chip{font-size:11px;padding:3px 8px}
-  .bar{border-radius:16px;padding:10px 12px;flex-wrap:nowrap;gap:8px}
-  .bar .bt{flex:1 1 auto}
-  .bar .bt b{font-size:20px}
-  .bar .bt .w{font-size:12px}
-  .bar .ba{flex:0 0 auto;gap:6px}.bar .ba button{padding:9px 12px;font-size:14px;min-height:40px}
-  button{min-height:42px}
-  button.sm{min-height:34px}
+  .card{padding:15px;border-radius:16px}
+  input,select,textarea{font-size:16px}
+  .sh h2{font-size:19px}
+  .bar{padding:10px 10px 10px 14px;gap:8px;border-radius:18px}
+  .bar .bt .big{font-size:26px}
+  .bar .ba{gap:6px}.bar .ba button{padding:10px 13px;font-size:14px}
+  .bar .ba #btnPrint .lbl{display:none}
+  .bar .bt .w .rt{display:none}
+  .ln-f .m.tot b{font-size:24px}
+  .qrbox canvas,.qrbox svg,.qrbox img{width:150px;height:150px}
 }
 @media print{
   @page{size:A4 portrait;margin:12mm}
@@ -173,112 +296,187 @@ body.mode-app .noserv-only{display:block}
 </style>
 </head>
 <body>
-<header class="top">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></symbol>
+<symbol id="i-set" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h11l3 3v13a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/></symbol>
+<symbol id="i-prt" viewBox="0 0 24 24"><path d="M7 9V3h10v6"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M7 14h10v7H7z"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-re" viewBox="0 0 24 24"><path d="M20 11a8 8 0 00-14.5-4M4 13a8 8 0 0014.5 4"/><path d="M20 4v5h-5M4 20v-5h5"/></symbol>
+<symbol id="i-go" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+<symbol id="i-ok" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-find" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M12 3l8 4v10l-8 4-8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M10 13L21 3"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M12 11v6M9 14h6"/></symbol>
+<symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2.5 9a15 15 0 0119 0M5.5 12.5a10.5 10.5 0 0113 0M8.7 16a6 6 0 016.6 0"/><circle cx="12" cy="19.2" r=".8"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 006.4 0l3-3a4.5 4.5 0 00-6.4-6.4l-1 1M14 10a4.5 4.5 0 00-6.4 0l-3 3a4.5 4.5 0 006.4 6.4l1-1"/></symbol>
+</defs></svg>
+
+<header class="top"><div class="topin">
   <div class="brand">
-    <div class="logo" aria-hidden="true">点</div>
-    <div style="min-width:0"><div class="ttl">作業点数</div><div class="sub">手書きカルテの写真 → 標準作業点数</div></div>
+    <div class="hanko" aria-hidden="true">点</div>
+    <div style="min-width:0"><div class="ttl">作業点数</div><div class="sub">紙カルテ → 標準作業点数 → 明細書</div></div>
   </div>
-  <div class="topr"><span id="chip" class="chip ng">点数表 未読込</span><button id="btnGear" class="ico" aria-label="設定" type="button">⚙</button></div>
-</header>
+  <div class="topr">
+    <span id="chip" class="chip ng">点数表 未読込</span>
+    <button id="btnGear" class="ib" aria-label="設定" type="button"><svg class="i"><use href="#i-set"/></svg></button>
+  </div>
+</div></header>
+
 <main>
 
-<details id="setBox" class="card"><summary>⚙ 設定（初回のみ）</summary>
-  <div class="row">
-    <div><label>Gemini APIキー（無料キー）</label><input type="password" id="setKey" placeholder="AIza..." autocomplete="off"></div>
-    <div><label>点単価（円/点）</label><input type="text" id="setRate" inputmode="numeric" placeholder="例: 7500"></div>
-    <div><label>店名（印刷用）</label><input type="text" id="setShop" placeholder="例: ○○自動車整備工場"></div>
-  </div>
-  <p class="hint" style="margin:10px 0 0">キー・点単価・店名は、この端末のブラウザ内にだけ保存されます。APIキーは <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> で無料で取れます。</p>
-</details>
-
-<details id="dataBox" class="card noserv-only"><summary>📦 点数表データの読み込み</summary>
-  <p style="margin:0 0 10px">PCで作った点数表データ（<b>tensu-data.json.gz</b>）を、この端末に<b>一度だけ</b>読み込みます。読み込み後は、PCが無くても使えます。</p>
-  <label style="margin-top:0">データファイルを選ぶ</label>
-  <input type="file" id="dataFile">
-  <div id="dataSt"></div>
-  <div class="row" style="margin-top:8px"><button type="button" id="btnDataClear" class="sm ghost">読み込み済みデータを消す</button></div>
-  <p class="hint" style="margin:10px 0 0">ファイルが選べないときは、OneDriveアプリでファイルを「ダウンロード」してから、「ダウンロード」フォルダを開いて選んでください。<br>データはこの端末の中にだけ保存され、インターネット上には置かれません。PCでデータを更新したときは、同じ手順で読み込み直してください（上書きされます）。</p>
-</details>
-
-<details id="impBox" class="card srv-only"><summary>＋ 点数表を追加・管理（FAINESのPDF）</summary>
-  <div id="drop" class="drop">FAINESの「自動車整備標準作業点数表」をPDF出力したファイルを、ここにドロップ（複数可）<br>
-    <button id="btnPick" type="button" style="margin-top:10px">ファイルを選ぶ</button>
-    <input type="file" id="impFile" accept="application/pdf,.pdf" multiple style="display:none"></div>
-  <div id="impSt"></div>
-  <details style="margin-top:10px"><summary id="vehSum" style="cursor:pointer;font-weight:700">登録済みの車種</summary><div id="vehList"></div></details>
-  <p class="hint" style="margin:10px 0 0">印刷で「PDFに保存」するだけでも自動で取り込まれます（ドキュメント/ダウンロード）。同じ車種は新しい内容で更新されます。データはこのPCの tensu-tool フォルダにだけ保存されます。<br>
-  スマホ用データ: <b>tensu-tool\phone\tensu-data.json.gz</b>（点数表を更新するたびに自動で作り直されます）</p>
-</details>
-
-<details id="phoneBox" class="card" style="display:none"><summary>📱 スマホで使う（同じWi-Fi）</summary>
-  <p style="margin:0 0 8px">同じWi-Fiのスマホのブラウザで、下のURLを<b>一度だけ</b>開くと、そのスマホで使えるようになります。</p>
-  <div id="phoneUrls" class="code"></div>
-  <div class="row" style="margin-top:8px"><button type="button" id="btnCopyUrl" class="sm">URLをコピー</button></div>
-  <p class="hint" style="margin:10px 0 0">・コードは、このPCとスマホだけの合言葉です。他人に見せないでください（変えたいときは access_code.txt を削除して再起動）。<br>
-  ・PCでツール（start_tensu.bat の黒い画面）が動いている間だけ使えます。PC無しで使うときは、スマホにアプリ版を入れてください。<br>
-  ・初回に Windows のファイアウォールの確認が出たら「プライベート ネットワーク」を許可してください。</p>
-</details>
+<section id="startBox" class="card start" style="display:none">
+  <h3>はじめに</h3>
+  <div class="hint">次の2つを一度だけ済ませると、すぐ使えます。</div>
+  <div class="chk" id="stData"><span class="dot"><svg class="i"><use href="#i-ok"/></svg></span><div>点数表データを入れる<small id="stDataSub"></small></div><button type="button" class="sm go" data-open="dataBox">開く</button></div>
+  <div class="chk" id="stKey"><span class="dot"><svg class="i"><use href="#i-ok"/></svg></span><div>Gemini APIキーを入れる<small>無料のキーでOK。この端末の中にだけ保存します</small></div><button type="button" class="sm go" data-open="setBox">開く</button></div>
+</section>
 
 <div id="fromApp"></div>
 
-<section class="card">
-  <div class="stephd"><span class="no">1</span><h2>車種を選ぶ<span class="sd">点数表の車種（型式・エンジン）</span></h2></div>
-  <select id="selVeh"></select>
-  <div class="hint" id="vehInfo" style="margin-top:8px"></div>
-  <div class="hint">写真から車種を判定できたときは自動で選びます。同じ型式でもエンジン・仕様違いで点数が違うので、備考も見てください。</div>
+<section class="step">
+  <div class="sh"><span class="sn">STEP 01</span><div><h2>車種を選ぶ</h2><p>点数表の車種（型式・エンジン）</p></div></div>
+  <div class="card">
+    <select id="selVeh" aria-label="車種"></select>
+    <div class="hint" id="vehInfo" style="margin-top:9px"></div>
+    <div class="hint">写真から車種を判定できたときは自動で選びます。同じ型式でもエンジン・仕様違いで点数が違うので、備考も見てください。</div>
+  </div>
 </section>
 
-<section class="card">
-  <div class="stephd"><span class="no">2</span><h2>紙カルテを撮る<span class="sd">何枚でもOK。AIが作業を読み取り、点数表の行に対応づけます</span></h2></div>
-  <div class="tiles">
-    <button type="button" id="btnCam" class="tile"><span class="big">📷</span>カルテを撮影</button>
-    <button type="button" id="btnGal" class="tile"><span class="big">🖼</span>写真を選ぶ</button>
+<section class="step">
+  <div class="sh"><span class="sn">STEP 02</span><div><h2>紙カルテを撮る</h2><p>何枚でもOK。AIが作業を読み取り、点数表の行に対応づけます</p></div></div>
+  <div class="card">
+    <div class="tiles">
+      <button type="button" id="btnCam" class="tile"><span class="ic"><svg class="i"><use href="#i-cam"/></svg></span>カルテを撮影</button>
+      <button type="button" id="btnGal" class="tile"><span class="ic"><svg class="i"><use href="#i-img"/></svg></span>写真を選ぶ</button>
+    </div>
+    <input type="file" id="fileCam" accept="image/*" capture="environment" style="display:none">
+    <input type="file" id="fileIn" accept="image/*" multiple style="display:none">
+    <div class="thumbs" id="thumbs"></div>
+    <div style="margin-top:14px"><button class="cta" id="btnRun" type="button">読み取って点数を付ける<svg class="i"><use href="#i-go"/></svg></button></div>
+    <div class="runst" id="runSt"></div>
+    <div id="msgBox"></div>
   </div>
-  <input type="file" id="fileCam" accept="image/*" capture="environment" style="display:none">
-  <input type="file" id="fileIn" accept="image/*" multiple style="display:none">
-  <div class="thumbs" id="thumbs"></div>
-  <button class="cta" id="btnRun" type="button" style="width:100%">読み取って点数を付ける</button>
-  <div class="hint" id="runSt" style="margin-top:8px;text-align:center"></div>
-  <div id="msgBox"></div>
 </section>
 
-<section class="card" id="secResult" style="display:none">
-  <div class="stephd"><span class="no">3</span><h2>確認・修正<span class="sd">点数は点数表の値です。AIは「どの行か」を選ぶだけ</span></h2></div>
-  <div class="row">
-    <div><label style="margin-top:0">作業日</label><input type="date" id="hDate"></div>
-    <div><label style="margin-top:0">走行距離(km)</label><input type="text" id="hOdo" inputmode="numeric"></div>
-    <div><label style="margin-top:0">登録番号</label><input type="text" id="hPlate"></div>
-    <div><label style="margin-top:0">お客様</label><input type="text" id="hCust"></div>
-    <div><label style="margin-top:0">担当者</label><input type="text" id="hStaff"></div>
-  </div>
+<section class="step" id="secResult" style="display:none">
+  <div class="sh"><span class="sn">STEP 03</span><div><h2>確認して、保存・印刷</h2><p>点数は点数表の値です。AIは「どの行か」を選ぶだけ</p></div></div>
+  <div class="card">
+    <div class="grid2">
+      <div><label style="margin-top:0">作業日</label><input type="date" id="hDate"></div>
+      <div><label style="margin-top:0">走行距離(km)</label><input type="text" id="hOdo" inputmode="numeric"></div>
+      <div><label>登録番号</label><input type="text" id="hPlate"></div>
+      <div><label>お客様</label><input type="text" id="hCust"></div>
+      <div class="w2"><label>担当者</label><input type="text" id="hStaff"></div>
+    </div>
 
-  <h3>作業と点数</h3>
-  <div class="lines" id="tbody"></div>
-  <div id="unmatched"></div>
-  <div class="addbox" style="margin-top:12px">
-    <label style="margin-top:0">作業を追加（点数表から検索）</label>
-    <input type="text" id="addQ" placeholder="例: クラッチ / ブレーキ・パッド / 4010">
-    <div class="addlist" id="addList" style="display:none"></div>
-  </div>
+    <h4>作業と点数</h4>
+    <div class="lines" id="tbody"></div>
+    <div id="unmatched"></div>
+    <div class="addbox">
+      <label style="margin-top:0">作業を追加（点数表から検索）</label>
+      <div class="si"><svg class="i"><use href="#i-find"/></svg><input type="text" id="addQ" placeholder="例: クラッチ / ブレーキ・パッド / 4010"></div>
+      <div class="addlist" id="addList" style="display:none"></div>
+    </div>
 
-  <h3>交換部品・使用材料</h3>
-  <textarea id="hParts" placeholder="1行に1件（例: エンジンオイル 20L）"></textarea>
-  <label>備考・申し送り</label><textarea id="hNote"></textarea>
-  <div class="row" style="margin-top:12px"><button id="btnRematch" type="button" class="ghost">↻ もう一度、点数表と照合</button><button id="btnCopy" type="button" class="ghost">📋 カルテ用にコピー</button></div>
-  <div id="saveMsg"></div>
+    <h4>交換部品・使用材料</h4>
+    <textarea id="hParts" placeholder="1行に1件（例: エンジンオイル 20L）"></textarea>
+    <label>備考・申し送り</label><textarea id="hNote"></textarea>
+    <div class="btnrow"><button id="btnRematch" type="button" class="ghost"><svg class="i"><use href="#i-re"/></svg>点数表と再照合</button><button id="btnCopy" type="button" class="ghost"><svg class="i"><use href="#i-copy"/></svg>カルテ用にコピー</button></div>
+    <div id="saveMsg"></div>
+  </div>
 
   <div class="bar">
-    <div class="bt"><small>合計</small><span><b id="totPts">0.0</b> 点</span><span class="w" id="totWage"></span></div>
-    <div class="ba"><button class="pri" id="btnSave" type="button">💾 保存</button><button id="btnPrint" type="button">🖨 印刷</button></div>
+    <div class="bt"><small>合計</small><span class="big"><span id="totPts">0.0</span><em>点</em></span><span class="w" id="totWage"></span></div>
+    <div class="ba"><button class="pri" id="btnSave" type="button"><svg class="i"><use href="#i-save"/></svg><span class="lbl">保存</span></button><button id="btnPrint" type="button"><svg class="i"><use href="#i-prt"/></svg><span class="lbl">印刷</span></button></div>
   </div>
 </section>
 
-<section class="card saved">
-  <div class="stephd"><h2>保存済み<span class="sd">この端末のブラウザ内に保存されます</span></h2></div>
-  <div id="savedList"></div>
-  <p class="hint" style="margin:10px 0 0">ブラウザのデータを消すと無くなります。大事なものは印刷またはPDF保存で残してください。</p>
+<section class="step saved">
+  <div class="sh"><div><h2>保存済み</h2><p>この端末のブラウザ内に保存されます</p></div></div>
+  <div class="card">
+    <div id="savedList"></div>
+    <p class="hint" style="margin:12px 0 0">ブラウザのデータを消すと無くなります。大事なものは印刷またはPDF保存で残してください。</p>
+  </div>
 </section>
 </main>
+
+<!-- 設定シート -->
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div class="bg" id="sheetBg"></div>
+  <div class="pn" role="dialog" aria-label="設定">
+    <div class="ph"><h2>設定とデータ</h2><button type="button" class="ib" id="btnSheetX" aria-label="閉じる"><svg class="i"><use href="#i-x"/></svg></button></div>
+
+    <section id="setBox" class="card">
+      <h3><svg class="i"><use href="#i-set"/></svg>基本設定</h3>
+      <label style="margin-top:0">Gemini APIキー（無料キー）</label><input type="password" id="setKey" placeholder="AIza..." autocomplete="off">
+      <div class="grid2">
+        <div><label>点単価（円/点）</label><input type="text" id="setRate" inputmode="numeric" placeholder="例: 7500"></div>
+        <div><label>店名（印刷用）</label><input type="text" id="setShop" placeholder="例: ○○自動車整備"></div>
+      </div>
+      <p class="hint" style="margin:12px 0 0">キー・点単価・店名は、この端末のブラウザ内にだけ保存されます。APIキーは <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> で無料で取れます。</p>
+    </section>
+
+    <section id="dataBox" class="card noserv-only">
+      <h3><svg class="i"><use href="#i-box"/></svg>点数表データ</h3>
+      <div id="dataSt"></div>
+      <p style="margin:0 0 4px">点数表はPCで作ったデータを、この端末に<b>一度だけ</b>取り込みます。取り込み後はPCが無くても使えます。</p>
+
+      <h4>① PCから直接受け取る（おすすめ）</h4>
+      <p class="hint" style="margin:0 0 8px">PCのツールの「設定 → スマホに点数表を送る」に出る<b>QR</b>をスマホのカメラで読むだけです。QRが読めないときは、PCに出ている8文字のコードを入れてください。</p>
+      <div style="display:flex;gap:8px"><input type="text" id="rxCode" placeholder="PCのコード（8文字）" autocomplete="off" autocapitalize="characters" maxlength="12" style="font-family:var(--num);font-weight:800;letter-spacing:.14em;text-transform:uppercase"><button type="button" class="pri" id="btnRx" style="flex:0 0 auto">受け取る</button></div>
+
+      <h4>② ファイルから読み込む</h4>
+      <input type="file" id="dataFile">
+      <p class="hint" style="margin:8px 0 0">PCの <b>tensu-tool\phone\tensu-data.json.gz</b> を選びます。データはこの端末の中にだけ保存され、インターネット上には置かれません。PCで点数表を増やしたら、同じ手順でもう一度受け取ってください（上書きされます）。</p>
+      <div class="btnrow"><button type="button" id="btnDataClear" class="sm ghost">読み込み済みデータを消す</button></div>
+    </section>
+
+    <section id="sendBox" class="card srv-only">
+      <h3><svg class="i"><use href="#i-send"/></svg>スマホに点数表を送る</h3>
+      <p style="margin:0">スマホで<b>アプリ版</b>（<a href="https://tomo-design.github.io/tensu-app/" target="_blank" rel="noopener">tomo-design.github.io/tensu-app</a>）を開き、下のQRを読み取ると、点数表がスマホの中に入ります。PCとスマホが同じWi-Fiでなくても使えます。</p>
+      <div class="btnrow"><button type="button" class="pri" id="btnSend"><svg class="i"><use href="#i-phone"/></svg>QRを表示して送る</button></div>
+      <div id="sendArea"></div>
+      <p class="hint" style="margin:12px 0 0">データはPCとスマホの間で直接（暗号化されて）送られ、クラウドには保存されません。QRとコードは一度きり・10分で無効になります。</p>
+    </section>
+
+    <section id="impBox" class="card srv-only">
+      <h3><svg class="i"><use href="#i-file"/></svg>点数表を追加・管理（FAINESのPDF）</h3>
+      <div id="drop" class="drop">FAINESの「自動車整備標準作業点数表」をPDF出力したファイルを、ここにドロップ（複数可）<br>
+        <button id="btnPick" type="button" style="margin-top:10px">ファイルを選ぶ</button>
+        <input type="file" id="impFile" accept="application/pdf,.pdf" multiple style="display:none"></div>
+      <div id="impSt"></div>
+      <details class="sub2"><summary id="vehSum">登録済みの車種</summary><div id="vehList"></div></details>
+      <p class="hint" style="margin:12px 0 0">印刷で「PDFに保存」するだけでも自動で取り込まれます（ドキュメント/ダウンロード）。同じ車種は新しい内容で更新されます。データはこのPCの tensu-tool フォルダにだけ保存されます。</p>
+    </section>
+
+    <section id="phoneBox" class="card" style="display:none">
+      <h3><svg class="i"><use href="#i-wifi"/></svg>同じWi-Fiで、PCのツールをスマホから使う</h3>
+      <p style="margin:0 0 8px">同じWi-Fiのスマホのブラウザで、下のURLを<b>一度だけ</b>開くと、そのスマホからPCのツールが使えます（PCが起動している間だけ）。</p>
+      <div id="phoneUrls" class="code"></div>
+      <div class="btnrow"><button type="button" id="btnCopyUrl" class="sm"><svg class="i"><use href="#i-copy"/></svg>URLをコピー</button></div>
+      <p class="hint" style="margin:10px 0 0">コードはこのPCとスマホだけの合言葉です。他人に見せないでください。初回にWindowsのファイアウォールの確認が出たら「プライベート ネットワーク」を許可してください。PC無しで使うなら、上の「スマホに点数表を送る」でアプリ版に点数表を入れてください。</p>
+    </section>
+  </div>
+</div>
+
+<!-- 受信画面(PC→スマホ) -->
+<div class="rx" id="rx" aria-live="polite"><div class="box">
+  <div class="big"><svg class="i" id="rxIcon"><use href="#i-phone"/></svg></div>
+  <h2 id="rxTtl">PCに接続しています…</h2>
+  <div class="hint" id="rxSub">そのままお待ちください</div>
+  <div class="prog" id="rxProg"><i id="rxBar"></i></div>
+  <div class="btnrow" style="justify-content:center"><button type="button" class="pri" id="rxOk" style="display:none">閉じる</button><button type="button" id="rxCancel">やめる</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
 <div id="printSheet"></div>
 
 <script id="fainesJs" src="data/faines.js"></script>
@@ -304,10 +502,29 @@ const veh = () => V.find(v => v.id === S.vid) || null;
 
 /* ========== 設定 ========== */
 $("setKey").value = lsGet(LSK.key, ""); $("setRate").value = lsGet(LSK.rate, ""); $("setShop").value = lsGet(LSK.shop, "");
-$("setKey").oninput = () => lsSet(LSK.key, $("setKey").value.trim());
+$("setKey").oninput = () => { lsSet(LSK.key, $("setKey").value.trim()); refreshStart(); };
 $("setRate").oninput = () => { lsSet(LSK.rate, String(numOf($("setRate").value) || "")); calc(); };
 $("setShop").oninput = () => lsSet(LSK.shop, $("setShop").value.trim());
-if (!lsGet(LSK.key, "")) $("setBox").open = true;
+const ico = n => '<svg class="i"><use href="#i-' + n + '"/></svg>';
+let toastT = 0;
+function toast(t) { const e = $("toast"); e.textContent = t; e.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => e.classList.remove("on"), 2600); }
+/* 設定シート */
+function openSheet(id) {
+  if (id === "dataBox" && document.body.classList.contains("mode-srv")) id = "impBox";   // PC版は「PDFの取り込み」を開く
+  $("sheet").classList.add("open"); $("sheet").setAttribute("aria-hidden", "false"); document.body.classList.add("lock");
+  if (id && $(id)) setTimeout(() => $(id).scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+}
+function closeSheet() { $("sheet").classList.remove("open"); $("sheet").setAttribute("aria-hidden", "true"); document.body.classList.remove("lock"); refreshStart(); }
+$("btnSheetX").onclick = closeSheet; $("sheetBg").onclick = closeSheet;
+document.addEventListener("keydown", e => { if (e.key === "Escape" && $("sheet").classList.contains("open")) closeSheet(); });
+$("startBox").addEventListener("click", e => { const b = e.target.closest("[data-open]"); if (b) openSheet(b.dataset.open); });
+/* はじめに(未設定のときだけ表示) */
+function refreshStart() {
+  const hasData = V.length > 0, hasKey = !!lsGet(LSK.key, "");
+  $("stData").classList.toggle("done", hasData); $("stKey").classList.toggle("done", hasKey);
+  $("stDataSub").textContent = hasData ? V.length + "車種を読み込み済み" : (document.body.classList.contains("mode-srv") ? "PDFを取り込むか、取り込み済みのデータを読み込みます" : "PCの「スマホに送る」のQRを読むだけ。PC無しで使えるようになります");
+  $("startBox").style.display = hasData && hasKey ? "none" : "";
+}
 const rate = () => numOf(lsGet(LSK.rate, "")) || 0;
 
 /* ========== 車種選択 ========== */
@@ -318,7 +535,7 @@ function buildSel() {
   sel.innerHTML = html;
   const want = S.vid || lsGet(LSK.veh, "");
   sel.value = V.some(v => v.id === want) ? want : ""; S.vid = sel.value;
-  if (!V.length) $("vehInfo").innerHTML = '<span style="color:var(--bad)">点数表データがありません。上の「点数表データの読み込み」（スマホ版）、または「点数表を追加・管理」（PC版）から取り込んでください。</span>';
+  if (!V.length) $("vehInfo").innerHTML = '<span style="color:var(--bad);font-weight:700">点数表データがまだありません。右上の設定（スライダーのマーク）から取り込んでください。</span>';
   else showVeh();
 }
 $("selVeh").onchange = () => { S.vid = $("selVeh").value; lsSet(LSK.veh, S.vid); showVeh(); };
@@ -347,7 +564,7 @@ $("btnCam").onclick = () => $("fileCam").click();
 $("btnGal").onclick = () => $("fileIn").click();
 $("fileCam").onchange = e => $("fileIn").onchange(e);
 function drawThumbs() {
-  $("thumbs").innerHTML = S.photos.map((d, i) => '<div><img src="' + d + '" alt=""><button data-i="' + i + '" aria-label="削除">×</button></div>').join("");
+  $("thumbs").innerHTML = S.photos.map((d, i) => '<div><img src="' + d + '" alt=""><button data-i="' + i + '" aria-label="削除">' + ico("x") + '</button></div>').join("");
   $("thumbs").querySelectorAll("button").forEach(b => b.onclick = () => { S.photos.splice(+b.dataset.i, 1); drawThumbs(); });
 }
 
@@ -356,7 +573,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function gemini(parts, opt) {
   opt = opt || {};
   const key = lsGet(LSK.key, "");
-  if (!key) { $("setBox").open = true; throw new Error("先に設定でGemini APIキーを入力してください。"); }
+  if (!key) { openSheet("setBox"); throw new Error("先に設定でGemini APIキーを入力してください。"); }
   let last = null;
   for (const model of ["gemini-2.5-flash", "gemini-flash-latest"]) {
     for (let a = 0; a < 3; a++) {
@@ -508,11 +725,11 @@ function draw() {
     const varSel = (r.v && r.v.length) ? '<select data-act="var" data-i="' + i + '"><option value="">変種（エンジン別など）を選択</option>' + r.v.map(x => '<option value="' + esc(x.n) + '"' + (x.n === l.variant ? " selected" : "") + '>' + esc(x.n) + ' (' + x.p + ')</option>').join("") + '</select>' : "";
     const optChk = (r.o || []).map(x => '<label class="opt"><input type="checkbox" data-act="opt" data-i="' + i + '" data-n="' + esc(x.n) + '"' + ((l.opts || []).includes(x.n) ? " checked" : "") + '> ' + esc(x.n) + ' +' + x.p + '</label>').join("");
     const conf = l.conf === "low" ? '<span class="badge warn">要確認</span>' : "";
-    return '<div class="ln"><div class="ln-h"><span class="cd">' + esc(r.c || "—") + '</span>' + secSel + conf + '<button type="button" class="x" data-act="del" data-i="' + i + '" aria-label="削除">×</button></div>' +
-      '<div class="ln-t">' + esc(r.n) + '</div>' + varSel + (optChk ? '<div>' + optChk + '</div>' : "") +
-      '<div class="src">記載: ' + esc(l.src) + (l.note ? " ／ " + esc(l.note) : "") + '</div>' +
-      '<div class="ln-f"><div class="qty"><button type="button" data-act="qdec" data-i="' + i + '" aria-label="減らす">−</button><input type="text" inputmode="decimal" data-act="qty" data-i="' + i + '" value="' + l.qty + '" aria-label="数量"><button type="button" data-act="qinc" data-i="' + i + '" aria-label="増やす">＋</button></div>' +
-      '<div class="m"><span>点数</span><b>' + (base == null ? '<span class="badge warn">変種を選択</span>' : fmt(r1(base + add))) + '</b></div>' +
+    return '<div class="ln s-' + secShort(r.m) + '"><div class="ln-h"><span class="cd">' + esc(r.c || "—") + '</span>' + secSel + conf + '<button type="button" class="x" data-act="del" data-i="' + i + '" aria-label="削除">' + ico("x") + '</button></div>' +
+      '<div class="ln-t">' + esc(r.n) + '</div>' + varSel + (optChk ? '<div class="opts">' + optChk + '</div>' : "") +
+      '<div class="src">' + ico("pen") + '<span>' + esc(l.src) + (l.note ? " ／ " + esc(l.note) : "") + '</span></div>' +
+      '<div class="ln-f"><div class="qty"><button type="button" data-act="qdec" data-i="' + i + '" aria-label="減らす">' + ico("minus") + '</button><input type="text" inputmode="decimal" data-act="qty" data-i="' + i + '" value="' + l.qty + '" aria-label="数量"><button type="button" data-act="qinc" data-i="' + i + '" aria-label="増やす">' + ico("plus") + '</button></div>' +
+      '<div class="m"><span>1つあたり</span><b>' + (base == null ? '<span class="badge warn">変種を選択</span>' : fmt(r1(base + add))) + '</b></div>' +
       '<div class="m tot"><span>小計</span><b>' + fmt(pt) + '</b></div></div></div>';
   }).join("") || '<div class="empty">点数表の行がまだありません。下の検索から追加できます。</div>';
   $("unmatched").innerHTML = S.unmatched.length ? '<div class="msg">点数表に対応づけられなかった作業:<br>' + S.unmatched.map(u => '・' + esc(u.text) + '（' + esc(u.note) + '）' + (u.wp != null ? ' 紙の点数 ' + u.wp : "")).join("<br>") + '<br><span class="hint">下の検索から手動で追加してください。</span></div>' : "";
@@ -522,7 +739,7 @@ function calc() {
   if (!veh()) return;
   const tot = S.lines.reduce((a, l) => a + (calcLine(l) || 0), 0), rt = rate();
   $("totPts").textContent = fmt(tot);
-  $("totWage").innerHTML = rt ? "工賃 <b>" + yen(tot * rt) + "</b> <span style='opacity:.8'>（" + rt.toLocaleString("ja-JP") + "円/点）</span>" : "<span style='opacity:.8'>点単価を設定すると工賃を計算します</span>";
+  $("totWage").innerHTML = rt ? "工賃 <b>" + yen(tot * rt) + "</b><span class='rt' style='color:var(--mute)'>　" + rt.toLocaleString("ja-JP") + "円/点</span>" : "<span class='rt' style='color:var(--mute)'>設定で点単価を入れると工賃を出します</span>";
 }
 $("tbody").addEventListener("change", e => {
   const t = e.target, i = +t.dataset.i, a = t.dataset.act; if (!a) return;
@@ -637,7 +854,7 @@ async function pollStatus() {
       if ((l.added || []).length) h += "<br>追加<br>" + l.added.map(x => "・" + esc(x)).join("<br>");
       if ((l.updated || []).length) h += "<br>更新<br>" + l.updated.map(x => "・" + esc(x)).join("<br>");
       if ((l.bad || []).length) h += '<br><span style="color:#8c2118">読み取れなかったファイル:<br>' + l.bad.map(f => "・" + esc(f.file) + "（" + esc(f.msg || "") + "）").join("<br>") + "</span>";
-      impMsg(h, (l.bad || []).length ? "" : "ok"); $("impBox").open = true;
+      impMsg(h, (l.bad || []).length ? "" : "ok"); toast("点数表を取り込みました（" + V.length + "車種）");
     }
   } catch (e) {}
 }
@@ -663,15 +880,15 @@ $("btnSave").onclick = () => {
   const s = snapshot(); S.curId = s.id;
   const all = readSaved().filter(x => x.id !== s.id); all.unshift(s);
   lsSet(LSK.saved, JSON.stringify(all.slice(0, 200)));
-  $("saveMsg").innerHTML = '<div class="msg ok">保存しました。</div>'; listSaved();
+  $("saveMsg").innerHTML = ""; toast("保存しました"); listSaved();
 };
 function listSaved() {
   const all = readSaved();
   $("savedList").innerHTML = all.length ? all.map(s => {
     const vi = s.vinfo || (V.find(x => x.id === s.vid) || {}), tot = (s.lines || []).reduce((a, l) => a + ((l.fix && l.fix.pts) || 0), 0);
-    return '<div class="it"><div class="t"><b>' + esc(s.head.date || "") + '</b> ' + esc(s.head.plate || "") + ' ' + esc(vi.car ? vi.car + " " + vi.type : "") + ' <span class="pts">' + fmt(tot) + ' 点</span></div>' +
-      '<button class="sm" data-load="' + s.id + '">開く</button><button class="sm" data-prt="' + s.id + '">印刷</button><button class="sm" data-rm="' + s.id + '">削除</button></div>';
-  }).join("") : '<div class="hint">まだありません。</div>';
+    return '<div class="it"><div class="t"><b>' + esc(s.head.date || "日付なし") + '</b>　<span class="pts">' + fmt(tot) + ' 点</span><small>' + esc([s.head.plate, vi.car ? vi.car + " " + vi.type : "", s.head.cust].filter(Boolean).join("　")) + '</small></div>' +
+      '<div class="acts"><button class="sm" data-load="' + s.id + '">開く</button><button class="sm" data-prt="' + s.id + '">印刷</button><button class="sm ghost" data-rm="' + s.id + '">削除</button></div></div>';
+  }).join("") : '<div class="empty">まだ保存した明細はありません。</div>';
 }
 $("savedList").addEventListener("click", e => {
   const t = e.target, all = readSaved();
@@ -693,7 +910,7 @@ function loadSaved(s) {
   });
   const h = s.head || {}; $("hDate").value = h.date || ""; $("hOdo").value = h.odo || ""; $("hPlate").value = h.plate || ""; $("hCust").value = h.cust || ""; $("hStaff").value = h.staff || ""; $("hNote").value = h.note || ""; $("hParts").value = h.parts || "";
   $("secResult").style.display = "";
-  if (v) draw(); else { $("tbody").innerHTML = '<tr><td colspan="6" class="hint">この明細の車種の点数表が登録されていません（印刷は保存時の内容で出せます）。</td></tr>'; $("unmatched").innerHTML = ""; }
+  if (v) draw(); else { $("tbody").innerHTML = '<div class="empty">この明細の車種の点数表が登録されていません（印刷は保存時の内容で出せます）。</div>'; $("unmatched").innerHTML = ""; }
   window.scrollTo({ top: $("secResult").offsetTop - 10, behavior: "smooth" });
 }
 
@@ -757,7 +974,7 @@ async function idbSet(k, v) {
 async function idbDel(k) {
   try { const db = await idbOpen(); return await new Promise((res) => { const tx = db.transaction("kv", "readwrite"); tx.objectStore("kv").delete(k); tx.oncomplete = () => res(true); tx.onerror = () => res(false); }); } catch (e) { return false; }
 }
-function updChip() { const c = $("chip"); c.textContent = V.length ? "点数表 " + V.length + "車種" : "点数表 未読込"; c.classList.toggle("ng", !V.length); }
+function updChip() { const c = $("chip"); c.textContent = V.length ? "点数表 " + V.length + "車種" : "点数表 未読込"; c.classList.toggle("ng", !V.length); refreshStart(); }
 function dataMsg(html, cls) { $("dataSt").innerHTML = html ? '<div class="msg ' + (cls || "") + '">' + html + '</div>' : ""; }
 async function readDataFile(file) {
   let text;
@@ -795,7 +1012,7 @@ async function initData() {
   }
   updChip();
 }
-$("btnGear").onclick = () => { const b = $("setBox"); b.open = !b.open; if (b.open) b.scrollIntoView({ behavior: "smooth", block: "start" }); };
+$("btnGear").onclick = () => openSheet();
 function registerSW() {
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
 }
@@ -830,14 +1047,14 @@ function findCandidates(info) {
 function pickVehicle(id) { S.vid = id; $("selVeh").value = id; lsSet(LSK.veh, id); showVeh(); showIncoming(); window.scrollTo({ top: 0, behavior: "smooth" }); }
 function showIncoming() {
   const box = $("fromApp"); if (!incoming) { box.innerHTML = ""; return; }
-  const info = incoming, head = '<b>🚚 メカノAIから受け取りました</b><br>' + esc([info.n, info.t && "型式 " + info.t, info.e && "原動機 " + info.e].filter(Boolean).join(" ／ "));
-  if (!V.length) { box.innerHTML = '<div class="msg">' + head + '<br>点数表データがまだ読み込まれていません。「点数表データの読み込み」を済ませると、車種を自動で選びます。</div>'; return; }
+  const info = incoming, head = '<b>メカノAIから車両を受け取りました</b><br>' + esc([info.n, info.t && "型式 " + info.t, info.e && "原動機 " + info.e].filter(Boolean).join(" ／ "));
+  if (!V.length) { box.innerHTML = '<div class="msg info">' + head + '<br>点数表データがまだ読み込まれていません。設定から点数表データを入れると、車種を自動で選びます。</div>'; return; }
   const c = findCandidates(info);
-  if (c.length === 1) { if (S.vid !== c[0].id) { S.vid = c[0].id; $("selVeh").value = c[0].id; lsSet(LSK.veh, c[0].id); showVeh(); } box.innerHTML = '<div class="msg ok">' + head + '<br>→ 点数表: <b>' + esc(vLabel(c[0])) + '</b> を選びました。</div>'; }
+  if (c.length === 1) { if (S.vid !== c[0].id) { S.vid = c[0].id; $("selVeh").value = c[0].id; lsSet(LSK.veh, c[0].id); showVeh(); } box.innerHTML = '<div class="msg ok">' + head + '<br>点数表: <b>' + esc(vLabel(c[0])) + '</b> を選びました。</div>'; }
   else if (c.length > 1) {
-    box.innerHTML = '<div class="msg">' + head + '<br>同じ型式でも仕様違いの点数表があります。該当するものを選んでください。' +
+    box.innerHTML = '<div class="msg info">' + head + '<br>同じ型式でも仕様違いの点数表があります。該当するものを選んでください。' +
       '<div class="chips">' + c.map(v => '<button type="button" data-pick="' + esc(v.id) + '"' + (S.vid === v.id ? ' class="pri"' : "") + '>' + esc(v.car + " " + v.type + " / " + v.engine) + '<small>' + esc(v.note || "（備考なし）") + '</small></button>').join("") + '</div></div>';
-  } else box.innerHTML = '<div class="msg err">' + head + '<br>この型式の点数表が、読み込み済みのデータに見つかりません。下の「車種を選ぶ」で手動で選ぶか、FAINESから点数表を追加してください。</div>';
+  } else box.innerHTML = '<div class="msg err">' + head + '<br>この型式の点数表が、読み込み済みのデータに見つかりません。「車種を選ぶ」で手動で選ぶか、FAINESから点数表を追加してください。</div>';
 }
 $("fromApp").addEventListener("click", e => { const b = e.target.closest("[data-pick]"); if (b) pickVehicle(b.dataset.pick); });
 
@@ -854,7 +1071,155 @@ $("btnCopy").onclick = async () => {
   $("saveMsg").innerHTML = ok ? '<div class="msg ok">コピーしました。メカノAIのカルテの「作業内容」に貼り付けてください。</div>' : '<div class="msg err">コピーできませんでした。手で選択してコピーしてください。<pre style="white-space:pre-wrap">' + esc(text) + '</pre></div>';
 };
 
-initData().then(() => { showIncoming(); return probeServer(); });
+
+/* ========== PC → スマホ 直接転送(WebRTC / PeerJS。データはクラウドを通らず端末間で直接送る) ========== */
+const APP_URL = "https://tomo-design.github.io/tensu-app/";
+const PEER_PREFIX = "tensu-";
+const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";            // 紛らわしい文字(0 O 1 I L)を除く
+const newCode = () => { const a = new Uint32Array(8); crypto.getRandomValues(a); return Array.from(a, x => CODE_CHARS[x % CODE_CHARS.length]).join(""); };
+const _ld = {};
+const loadScript = src => _ld[src] || (_ld[src] = new Promise((res, rej) => {
+  const sc = document.createElement("script"); sc.src = src; sc.onload = () => res(true);
+  sc.onerror = () => { delete _ld[src]; rej(new Error("部品の読み込みに失敗しました。インターネットにつながっているか確認してください。")); };
+  document.head.appendChild(sc);
+}));
+async function sha256hex(buf) {
+  try { if (!(window.crypto && crypto.subtle)) return ""; return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", buf)), b => b.toString(16).padStart(2, "0")).join(""); } catch (e) { return ""; }
+}
+const peerErr = e => {
+  const t = e && e.type;
+  if (t === "peer-unavailable") return "PCが見つかりません。コードが違うか、PC側の表示の期限（10分）が切れています。PCで「QRを表示して送る」をもう一度押してください。";
+  if (t === "network" || t === "server-error" || t === "socket-error" || t === "socket-closed") return "接続用のサーバーにつながりません。ネットワークを確認して、もう一度お試しください。";
+  if (t === "webrtc") return "PCとの直接通信を始められませんでした。PCとスマホの両方がインターネットにつながっているか確認してください。";
+  return "通信エラー: " + String((e && (e.message || e.type)) || e);
+};
+
+/* --- 送る側(PCのツール) --- */
+let tx = null;
+function sendStop() { if (tx) { clearInterval(tx.tick); try { tx.peer.destroy(); } catch (e) {} tx = null; } }
+function sendNote(html, cls) { $("sendArea").innerHTML = '<div class="msg ' + (cls || "") + '">' + html + '</div>'; }
+async function sendStart() {
+  sendStop(); const btn = $("btnSend"); btn.disabled = true; btn.classList.add("busy"); $("sendArea").innerHTML = "";
+  try {
+    if (!V.length) throw new Error("点数表がまだありません。先にFAINESのPDFを取り込んでください。");
+    const r = await fetch("phone/tensu-data.json.gz", { cache: "no-store" });
+    if (!r.ok) throw new Error("スマホ用データがまだ作られていません。PDFを1件取り込むと自動で作られます。");
+    const buf = await r.arrayBuffer(), sha = await sha256hex(buf);
+    await Promise.all([loadScript("vendor/peerjs.min.js"), loadScript("vendor/qrcode.js")]);
+    const code = newCode(), url = APP_URL + "#r=" + code, until = Date.now() + 10 * 60 * 1000;
+    const peer = new Peer(PEER_PREFIX + code, { debug: 0 });
+    const me = tx = { peer, used: false, tick: 0 };
+    const qr = qrcode(0, "M"); qr.addData(url); qr.make();
+    $("sendArea").innerHTML = '<div class="qrbox"><div id="qrHost">' + qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true }) + '</div><div class="qt">' +
+      '<div class="hint">① スマホのカメラでQRを読む<br>② 開いたページで、受け取りが自動で始まります</div>' +
+      '<div class="hint" style="margin-top:8px">QRが読めないとき：アプリ版の設定で、次のコードを入力</div><div class="pcode num">' + code.slice(0, 4) + " " + code.slice(4) + '</div>' +
+      '<div class="prog"><i id="txBar"></i></div><div class="hint" id="txSt">スマホの接続を待っています…（残り <span id="txLeft">10:00</span>）</div>' +
+      '<div class="btnrow"><button type="button" class="sm" id="btnTxCopy">' + ico("link") + 'リンクをコピー</button><button type="button" class="sm ghost" id="btnTxStop">やめる</button></div></div></div>';
+    $("btnTxStop").onclick = () => { sendStop(); $("sendArea").innerHTML = ""; };
+    $("btnTxCopy").onclick = async () => { try { await navigator.clipboard.writeText(url); toast("リンクをコピーしました"); } catch (e) { toast("コピーできませんでした"); } };
+    const st = h => { const e = $("txSt"); if (e) e.innerHTML = h; };
+    me.tick = setInterval(() => {
+      const left = Math.max(0, until - Date.now()), e = $("txLeft");
+      if (e) e.textContent = Math.floor(left / 60000) + ":" + String(Math.floor(left / 1000) % 60).padStart(2, "0");
+      if (!left && !me.used) { sendStop(); sendNote("時間切れです。もう一度「QRを表示して送る」を押してください。", "err"); }
+    }, 1000);
+    peer.on("error", e => { if (tx === me) { sendStop(); sendNote(esc(peerErr(e)), "err"); } });
+    peer.on("connection", conn => {
+      if (me.used) { try { conn.close(); } catch (e) {} return; }          // 一度きり
+      me.used = true;
+      conn.on("open", async () => {
+        try {
+          st("スマホが接続しました。送信中…");
+          conn.send(JSON.stringify({ t: "meta", size: buf.byteLength, sha, n: V.length }));
+          const CH = 16384;
+          for (let o = 0; o < buf.byteLength; o += CH) {
+            while (conn.dataChannel && conn.dataChannel.bufferedAmount > (1 << 20)) await sleep(25);
+            conn.send(buf.slice(o, o + CH));
+            const b = $("txBar"); if (b) b.style.width = Math.round(Math.min(o + CH, buf.byteLength) / buf.byteLength * 100) + "%";
+          }
+          conn.send(JSON.stringify({ t: "end" }));
+          st("送信しました。スマホの確認を待っています…");
+        } catch (e) { if (tx === me) { sendStop(); sendNote("送信に失敗しました: " + esc(e.message || e), "err"); } }
+      });
+      conn.on("data", d => {
+        if (typeof d !== "string") return;
+        let m = null; try { m = JSON.parse(d); } catch (e) {}
+        if (m && m.t === "ok") { sendStop(); sendNote("スマホに送りました（" + V.length + "車種）。スマホ側で完了の表示を確認してください。", "ok"); }
+        else if (m && m.t === "ng") { sendStop(); sendNote("スマホ側で受け取りに失敗しました: " + esc(m.msg || ""), "err"); }
+      });
+      conn.on("close", () => { if (tx === me && me.used) { setTimeout(() => { if (tx === me) { sendStop(); sendNote("接続が切れました。もう一度「QRを表示して送る」を押してください。", "err"); } }, 4000); } });
+    });
+  } catch (e) { sendStop(); sendNote(esc(e.message || e), "err"); }
+  finally { btn.disabled = false; btn.classList.remove("busy"); }
+}
+$("btnSend").onclick = sendStart;
+
+/* --- 受ける側(スマホのアプリ版) --- */
+let rxPeer = null, rxTimer = 0, rxDone = false;
+function rxView(state, ttl, sub, pct) {
+  const el = $("rx"); el.classList.add("open"); el.classList.toggle("done", state === "done"); el.classList.toggle("fail", state === "fail");
+  $("rxIcon").innerHTML = '<use href="#i-' + (state === "done" ? "ok" : state === "fail" ? "x" : "phone") + '"/>';
+  $("rxTtl").textContent = ttl; $("rxSub").textContent = sub || "";
+  $("rxProg").style.display = state === "recv" ? "" : "none"; $("rxBar").style.width = (pct || 0) + "%";
+  $("rxOk").style.display = state === "done" || state === "fail" ? "" : "none"; $("rxCancel").style.display = state === "done" || state === "fail" ? "none" : "";
+  document.body.classList.add("lock");
+}
+function rxClose() { clearTimeout(rxTimer); try { rxPeer && rxPeer.destroy(); } catch (e) {} rxPeer = null; $("rx").classList.remove("open"); if (!$("sheet").classList.contains("open")) document.body.classList.remove("lock"); }
+$("rxCancel").onclick = rxClose; $("rxOk").onclick = rxClose;
+async function rxStart(raw) {
+  const code = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (code.length !== 8) { toast("コードは8文字です"); return; }
+  if ($("sheet").classList.contains("open")) closeSheet();
+  clearTimeout(rxTimer); try { rxPeer && rxPeer.destroy(); } catch (e) {} rxDone = false;
+  rxView("busy", "PCに接続しています…", "PCのツールで「QRを表示して送る」を押したままにしてください");
+  const fail = m => { if (rxDone) return; rxDone = true; clearTimeout(rxTimer); try { rxPeer && rxPeer.destroy(); } catch (e) {} rxView("fail", "受け取れませんでした", m); };
+  try {
+    await loadScript("vendor/peerjs.min.js");
+    const peer = rxPeer = new Peer({ debug: 0 });
+    rxTimer = setTimeout(() => fail("PCから応答がありません。PCのツールが開いたままか、PCがインターネットにつながっているか確認してください。"), 30000);
+    peer.on("error", e => fail(peerErr(e)));
+    peer.on("open", () => {
+      const conn = peer.connect(PEER_PREFIX + code, { reliable: true, serialization: "raw" });
+      const chunks = []; let meta = null, got = 0;
+      conn.on("open", () => { clearTimeout(rxTimer); rxTimer = setTimeout(() => fail("途中で止まりました。もう一度お試しください。"), 60000); rxView("recv", "点数表を受信中…", "そのままお待ちください", 0); });
+      conn.on("data", async d => {
+        if (rxDone) return;
+        if (typeof d === "string") {
+          let m = null; try { m = JSON.parse(d); } catch (e) {}
+          if (m && m.t === "meta") meta = m;
+          else if (m && m.t === "end") {
+            try {
+              clearTimeout(rxTimer);
+              if (!meta || got !== meta.size) throw new Error("データが途中までしか届きませんでした（" + got + "/" + (meta ? meta.size : "?") + "）。");
+              const blob = new Blob(chunks), h = await sha256hex(await blob.arrayBuffer());
+              if (meta.sha && h && meta.sha !== h) throw new Error("データが壊れていました。もう一度お試しください。");
+              rxView("recv", "保存しています…", "", 100);
+              const dd = await readDataFile(new File([blob], "tensu-data.json.gz"));
+              await idbSet("faines", { vehicles: dd.vehicles, built: dd.built, at: Date.now() });
+              V = dd.vehicles; buildSel(); renderVehList(); updChip(); showIncoming();
+              rxDone = true; try { conn.send(JSON.stringify({ t: "ok" })); } catch (e) {}
+              dataMsg("受け取りました：<b>" + V.length + "</b> 車種。PC無しで使えます。", "ok");
+              rxView("done", "受け取りました", V.length + "車種の点数表が、このスマホの中に入りました。以後はPC無しで使えます。");
+              setTimeout(() => { try { peer.destroy(); } catch (e) {} }, 1500);
+            } catch (e) { try { conn.send(JSON.stringify({ t: "ng", msg: String(e.message || e) })); } catch (e2) {} fail(String(e.message || e)); }
+          }
+          return;
+        }
+        chunks.push(d); got += d.byteLength || d.size || 0;
+        if (meta && meta.size) rxView("recv", "点数表を受信中…", Math.round(got / 1024) + " / " + Math.round(meta.size / 1024) + " KB", Math.min(99, Math.round(got / meta.size * 100)));
+      });
+      conn.on("close", () => { if (!rxDone) setTimeout(() => { if (!rxDone) fail("接続が切れました。もう一度お試しください。"); }, 1500); });
+      conn.on("error", e => fail(peerErr(e)));
+    });
+  } catch (e) { fail(String(e.message || e)); }
+}
+$("btnRx").onclick = () => rxStart($("rxCode").value);
+$("rxCode").addEventListener("keydown", e => { if (e.key === "Enter") rxStart($("rxCode").value); });
+const _rxm = location.hash.match(/[#&]r=([A-Za-z0-9]+)/);                       // PCのQRから開いたとき: 自動で受け取りを始める
+const autoRx = _rxm ? _rxm[1] : "";
+if (autoRx) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
+
+initData().then(() => { showIncoming(); return probeServer(); }).then(() => { if (autoRx) rxStart(autoRx); });
 </script>
 </body>
 </html>
