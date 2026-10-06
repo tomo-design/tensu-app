@@ -1,0 +1,16 @@
+{
+  "name": "作業点数（個人用）",
+  "short_name": "作業点数",
+  "description": "手書き整備カルテの写真から標準作業点数を付けて、保存・印刷するツール",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1f3a",
+  "theme_color": "#0b1f3a",
+  "lang": "ja",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
