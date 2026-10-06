@@ -194,10 +194,10 @@ body.mode-app .noserv-only{display:block}
 <details id="dataBox" class="card noserv-only"><summary>📦 点数表データの読み込み</summary>
   <p style="margin:0 0 10px">PCで作った点数表データ（<b>tensu-data.json.gz</b>）を、この端末に<b>一度だけ</b>読み込みます。読み込み後は、PCが無くても使えます。</p>
   <label style="margin-top:0">データファイルを選ぶ</label>
-  <input type="file" id="dataFile" accept=".gz,.json,.js,application/gzip,application/json">
+  <input type="file" id="dataFile">
   <div id="dataSt"></div>
   <div class="row" style="margin-top:8px"><button type="button" id="btnDataClear" class="sm ghost">読み込み済みデータを消す</button></div>
-  <p class="hint" style="margin:10px 0 0">データはこの端末の中にだけ保存され、インターネット上には置かれません。PCでデータを更新したときは、同じ手順で読み込み直してください（上書きされます）。</p>
+  <p class="hint" style="margin:10px 0 0">ファイルが選べないときは、OneDriveアプリでファイルを「ダウンロード」してから、「ダウンロード」フォルダを開いて選んでください。<br>データはこの端末の中にだけ保存され、インターネット上には置かれません。PCでデータを更新したときは、同じ手順で読み込み直してください（上書きされます）。</p>
 </details>
 
 <details id="impBox" class="card srv-only"><summary>＋ 点数表を追加・管理（FAINESのPDF）</summary>
