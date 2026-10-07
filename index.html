@@ -47,6 +47,7 @@ a{color:var(--info)}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--ok-t);color:var(--ok);white-space:nowrap}
 .chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
 .chip.ng{background:var(--warn-t);color:var(--warn)}
+@media (max-width:640px){.chip .lb{display:none}}
 .ib{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
 .ib .i{width:20px;height:20px}
 main{max-width:760px;margin:0 auto;padding:18px 16px 40px}
@@ -326,6 +327,7 @@ body.mode-app .noserv-only{display:block}
   </div>
   <div class="topr">
     <span id="chip" class="chip ng">点数表 未読込</span>
+    <button id="btnUpd" class="ib" aria-label="PCから点数表を更新" title="PCから点数表を更新" type="button" style="display:none"><svg class="i"><use href="#i-re"/></svg></button>
     <button id="btnGear" class="ib" aria-label="設定" type="button"><svg class="i"><use href="#i-set"/></svg></button>
   </div>
 </div></header>
@@ -427,9 +429,14 @@ body.mode-app .noserv-only{display:block}
     <section id="dataBox" class="card noserv-only">
       <h3><svg class="i"><use href="#i-box"/></svg>点数表データ</h3>
       <div id="dataSt"></div>
-      <p style="margin:0 0 4px">点数表はPCで作ったデータを、この端末に<b>一度だけ</b>取り込みます。取り込み後はPCが無くても使えます。</p>
+      <div id="updRow" style="display:none;margin:4px 0 12px">
+        <button type="button" class="pri" id="btnUpd2" style="width:100%"><svg class="i"><use href="#i-re"/></svg>PCに確認して更新する</button>
+        <p class="hint" style="margin:8px 0 0">PCのツールの画面が開いているときに使えます。PCで車種が増えていれば、そのまま取り込みます（上書き）。最新なら「最新です」と出ます。</p>
+      </div>
+      <p style="margin:0 0 4px">点数表はPCで作ったデータを、この端末に取り込んで使います。取り込み後はPCが無くても使えます。</p>
 
       <h4>① PCから直接受け取る（おすすめ）</h4>
+      <p class="hint" style="margin:0 0 6px">一度受け取ると、次からは上の「PCに確認して更新する」だけで更新できます。</p>
       <p class="hint" style="margin:0 0 8px">PCのツールの「設定 → スマホに点数表を送る」に出る<b>QR</b>をスマホのカメラで読むだけです。QRが読めないときは、PCに出ている8文字のコードを入れてください。</p>
       <div style="display:flex;gap:8px"><input type="text" id="rxCode" placeholder="PCのコード（8文字）" autocomplete="off" autocapitalize="characters" maxlength="12" style="font-family:var(--num);font-weight:800;letter-spacing:.14em;text-transform:uppercase"><button type="button" class="pri" id="btnRx" style="flex:0 0 auto">受け取る</button></div>
 
@@ -445,6 +452,10 @@ body.mode-app .noserv-only{display:block}
       <div class="btnrow"><button type="button" class="pri" id="btnSend"><svg class="i"><use href="#i-phone"/></svg>QRを表示して送る</button></div>
       <div id="sendArea"></div>
       <p class="hint" style="margin:12px 0 0">データはPCとスマホの間で直接（暗号化されて）送られ、クラウドには保存されません。QRとコードは一度きり・10分で無効になります。</p>
+      <h4>スマホからの更新</h4>
+      <p class="hint" style="margin:0 0 6px">一度QRで送ったスマホは、このツールの画面を開いている間、スマホ側の操作だけで点数表を更新できます。</p>
+      <div class="hint">状態: <b id="pairSt">準備中…</b></div>
+      <div class="btnrow"><button type="button" class="sm ghost" id="btnPairReset">接続コードを作り直す</button></div>
     </section>
 
     <section id="impBox" class="card srv-only">
@@ -524,6 +535,12 @@ function refreshStart() {
   $("stData").classList.toggle("done", hasData); $("stKey").classList.toggle("done", hasKey);
   $("stDataSub").textContent = hasData ? V.length + "車種を読み込み済み" : (document.body.classList.contains("mode-srv") ? "PDFを取り込むか、取り込み済みのデータを読み込みます" : "PCの「スマホに送る」のQRを読むだけ。PC無しで使えるようになります");
   $("startBox").style.display = hasData && hasKey ? "none" : "";
+  refreshUpd();
+}
+/* スマホ: 一度PCとペアリング(QR受け取り)済みなら「PCから更新」ボタンを出す */
+function refreshUpd() {
+  const on = document.body.classList.contains("mode-app") && /^[A-Z0-9]{16}$/.test(lsGet("tensu_pair", ""));
+  $("btnUpd").style.display = on ? "" : "none"; $("updRow").style.display = on ? "" : "none";
 }
 const rate = () => numOf(lsGet(LSK.rate, "")) || 0;
 
@@ -974,7 +991,7 @@ async function idbSet(k, v) {
 async function idbDel(k) {
   try { const db = await idbOpen(); return await new Promise((res) => { const tx = db.transaction("kv", "readwrite"); tx.objectStore("kv").delete(k); tx.oncomplete = () => res(true); tx.onerror = () => res(false); }); } catch (e) { return false; }
 }
-function updChip() { const c = $("chip"); c.textContent = V.length ? "点数表 " + V.length + "車種" : "点数表 未読込"; c.classList.toggle("ng", !V.length); refreshStart(); }
+function updChip() { const c = $("chip"); c.innerHTML = V.length ? '<span class="lb">点数表 </span>' + V.length + "車種" : '<span class="lb">点数表 </span>未読込'; c.classList.toggle("ng", !V.length); refreshStart(); }
 function dataMsg(html, cls) { $("dataSt").innerHTML = html ? '<div class="msg ' + (cls || "") + '">' + html + '</div>' : ""; }
 async function readDataFile(file) {
   let text;
@@ -1021,9 +1038,9 @@ async function probeServer() {
   try {
     const r = await fetch("api/status", { cache: "no-store" });
     const s = r.ok ? await r.json() : null;
-    if (s && s.ok) { apiOK = true; document.body.classList.add("mode-srv"); setInterval(pollStatus, 4000); pollStatus(); return; }
+    if (s && s.ok) { apiOK = true; document.body.classList.add("mode-srv"); setInterval(pollStatus, 4000); pollStatus(); pairListen(); return; }
   } catch (e) {}
-  document.body.classList.add("mode-app"); registerSW();
+  document.body.classList.add("mode-app"); registerSW(); refreshUpd();
 }
 
 /* ========== メカノAIから車両を受け取る(型式をURLの#以降で受け取り、点数表の車種を選ぶ) ========== */
@@ -1076,7 +1093,8 @@ $("btnCopy").onclick = async () => {
 const APP_URL = "https://tomo-design.github.io/tensu-app/";
 const PEER_PREFIX = "tensu-";
 const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";            // 紛らわしい文字(0 O 1 I L)を除く
-const newCode = () => { const a = new Uint32Array(8); crypto.getRandomValues(a); return Array.from(a, x => CODE_CHARS[x % CODE_CHARS.length]).join(""); };
+const PAIR_PREFIX = "tensu-pair-", PAIR_PC = "tensu_pair_pc", PAIR_PH = "tensu_pair";
+const newCode = n => { const a = new Uint32Array(n || 8); crypto.getRandomValues(a); return Array.from(a, x => CODE_CHARS[x % CODE_CHARS.length]).join(""); };
 const _ld = {};
 const loadScript = src => _ld[src] || (_ld[src] = new Promise((res, rej) => {
   const sc = document.createElement("script"); sc.src = src; sc.onload = () => res(true);
@@ -1086,8 +1104,9 @@ const loadScript = src => _ld[src] || (_ld[src] = new Promise((res, rej) => {
 async function sha256hex(buf) {
   try { if (!(window.crypto && crypto.subtle)) return ""; return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", buf)), b => b.toString(16).padStart(2, "0")).join(""); } catch (e) { return ""; }
 }
-const peerErr = e => {
+const peerErr = (e, upd) => {
   const t = e && e.type;
+  if (t === "peer-unavailable" && upd) return "PCのツールが見つかりません。PCで start_tensu.bat を起動して、ツールの画面を開いたままにしてください。それでも駄目なときは、PCの「QRを表示して送る」で受け取り直してください。";
   if (t === "peer-unavailable") return "PCが見つかりません。コードが違うか、PC側の表示の期限（10分）が切れています。PCで「QRを表示して送る」をもう一度押してください。";
   if (t === "network" || t === "server-error" || t === "socket-error" || t === "socket-closed") return "接続用のサーバーにつながりません。ネットワークを確認して、もう一度お試しください。";
   if (t === "webrtc") return "PCとの直接通信を始められませんでした。PCとスマホの両方がインターネットにつながっているか確認してください。";
@@ -1095,6 +1114,22 @@ const peerErr = e => {
 };
 
 /* --- 送る側(PCのツール) --- */
+async function loadPhoneData() {
+  const r = await fetch("phone/tensu-data.json.gz", { cache: "no-store" });
+  if (!r.ok) throw new Error("スマホ用データがまだ作られていません。PDFを1件取り込むと自動で作られます。");
+  const buf = await r.arrayBuffer(); return { buf, sha: await sha256hex(buf) };
+}
+function pairSecret() { let c = lsGet(PAIR_PC, ""); if (!/^[A-Z0-9]{16}$/.test(c)) { c = newCode(16); lsSet(PAIR_PC, c); } return c; }
+async function sendData(conn, buf, sha, bar) {
+  conn.send(JSON.stringify({ t: "meta", size: buf.byteLength, sha, pair: pairSecret() }));       // pair: 次回からスマホ側だけで更新できるようにする合言葉
+  const CH = 16384;
+  for (let o = 0; o < buf.byteLength; o += CH) {
+    while (conn.dataChannel && conn.dataChannel.bufferedAmount > (1 << 20)) await sleep(25);
+    conn.send(buf.slice(o, o + CH));
+    if (bar) bar(Math.min(o + CH, buf.byteLength) / buf.byteLength);
+  }
+  conn.send(JSON.stringify({ t: "end" }));
+}
 let tx = null;
 function sendStop() { if (tx) { clearInterval(tx.tick); try { tx.peer.destroy(); } catch (e) {} tx = null; } }
 function sendNote(html, cls) { $("sendArea").innerHTML = '<div class="msg ' + (cls || "") + '">' + html + '</div>'; }
@@ -1102,9 +1137,7 @@ async function sendStart() {
   sendStop(); const btn = $("btnSend"); btn.disabled = true; btn.classList.add("busy"); $("sendArea").innerHTML = "";
   try {
     if (!V.length) throw new Error("点数表がまだありません。先にFAINESのPDFを取り込んでください。");
-    const r = await fetch("phone/tensu-data.json.gz", { cache: "no-store" });
-    if (!r.ok) throw new Error("スマホ用データがまだ作られていません。PDFを1件取り込むと自動で作られます。");
-    const buf = await r.arrayBuffer(), sha = await sha256hex(buf);
+    const { buf, sha } = await loadPhoneData();
     await Promise.all([loadScript("vendor/peerjs.min.js"), loadScript("vendor/qrcode.js")]);
     const code = newCode(), url = APP_URL + "#r=" + code, until = Date.now() + 10 * 60 * 1000;
     const peer = new Peer(PEER_PREFIX + code, { debug: 0 });
@@ -1130,14 +1163,7 @@ async function sendStart() {
       conn.on("open", async () => {
         try {
           st("スマホが接続しました。送信中…");
-          conn.send(JSON.stringify({ t: "meta", size: buf.byteLength, sha, n: V.length }));
-          const CH = 16384;
-          for (let o = 0; o < buf.byteLength; o += CH) {
-            while (conn.dataChannel && conn.dataChannel.bufferedAmount > (1 << 20)) await sleep(25);
-            conn.send(buf.slice(o, o + CH));
-            const b = $("txBar"); if (b) b.style.width = Math.round(Math.min(o + CH, buf.byteLength) / buf.byteLength * 100) + "%";
-          }
-          conn.send(JSON.stringify({ t: "end" }));
+          await sendData(conn, buf, sha, f => { const b = $("txBar"); if (b) b.style.width = Math.round(f * 100) + "%"; });
           st("送信しました。スマホの確認を待っています…");
         } catch (e) { if (tx === me) { sendStop(); sendNote("送信に失敗しました: " + esc(e.message || e), "err"); } }
       });
@@ -1154,6 +1180,38 @@ async function sendStart() {
 }
 $("btnSend").onclick = sendStart;
 
+/* --- PCの待機: 一度ペアリングしたスマホが、スマホ側の操作だけで更新できるようにする(このツールの画面が開いている間だけ) --- */
+let pairPeer = null;
+function pairSt(t) { const e = $("pairSt"); if (e) e.textContent = t; }
+async function pairListen() {
+  if (!apiOK) return;
+  if (pairPeer && !pairPeer.destroyed) { if (pairPeer.disconnected) { try { pairPeer.reconnect(); } catch (e) {} } return; }
+  try {
+    await loadScript("vendor/peerjs.min.js");
+    const peer = pairPeer = new Peer(PAIR_PREFIX + pairSecret(), { debug: 0 });
+    peer.on("open", () => pairSt("待機中（スマホから更新できます）"));
+    peer.on("disconnected", () => { pairSt("再接続中…"); try { peer.reconnect(); } catch (e) {} });
+    peer.on("error", e => pairSt(e && e.type === "unavailable-id" ? "別の画面で待機中" : "待機できません（" + ((e && e.type) || "") + "）。自動で再試行します"));
+    peer.on("connection", conn => {
+      let cache = null;
+      conn.on("data", async d => {
+        if (typeof d !== "string") return;
+        let m = null; try { m = JSON.parse(d); } catch (e) {}
+        if (!m) return;
+        try {
+          if (m.t === "chk") { cache = await loadPhoneData(); conn.send(JSON.stringify({ t: "info", same: !!m.sha && m.sha === cache.sha, n: V.length })); }
+          else if (m.t === "get") { if (!cache) cache = await loadPhoneData(); await sendData(conn, cache.buf, cache.sha); }
+        } catch (e) { try { conn.send(JSON.stringify({ t: "ng", msg: String(e.message || e) })); } catch (e2) {} }
+      });
+    });
+  } catch (e) { pairSt("待機できません"); }
+}
+setInterval(() => { if (apiOK) pairListen(); }, 45000);
+$("btnPairReset").onclick = () => {
+  if (!confirm("接続コードを作り直します。今つながっているスマホは、もう一度QRで受け取り直す必要があります。よろしいですか？")) return;
+  lsSet(PAIR_PC, ""); try { pairPeer && pairPeer.destroy(); } catch (e) {} pairPeer = null; pairSt("準備中…"); pairListen(); toast("接続コードを作り直しました");
+};
+
 /* --- 受ける側(スマホのアプリ版) --- */
 let rxPeer = null, rxTimer = 0, rxDone = false;
 function rxView(state, ttl, sub, pct) {
@@ -1166,28 +1224,41 @@ function rxView(state, ttl, sub, pct) {
 }
 function rxClose() { clearTimeout(rxTimer); try { rxPeer && rxPeer.destroy(); } catch (e) {} rxPeer = null; $("rx").classList.remove("open"); if (!$("sheet").classList.contains("open")) document.body.classList.remove("lock"); }
 $("rxCancel").onclick = rxClose; $("rxOk").onclick = rxClose;
-async function rxStart(raw) {
-  const code = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (code.length !== 8) { toast("コードは8文字です"); return; }
+/* PCに接続して点数表を受け取る。upd=true: 保存済みの合言葉でPCに問い合わせ、違いがあるときだけ受け取る */
+async function rxRun(peerId, upd) {
   if ($("sheet").classList.contains("open")) closeSheet();
   clearTimeout(rxTimer); try { rxPeer && rxPeer.destroy(); } catch (e) {} rxDone = false;
-  rxView("busy", "PCに接続しています…", "PCのツールで「QRを表示して送る」を押したままにしてください");
-  const fail = m => { if (rxDone) return; rxDone = true; clearTimeout(rxTimer); try { rxPeer && rxPeer.destroy(); } catch (e) {} rxView("fail", "受け取れませんでした", m); };
+  const before = V.length;
+  rxView("busy", upd ? "PCに確認しています…" : "PCに接続しています…", upd ? "PCのツールの画面が開いている間だけ更新できます" : "PCのツールで「QRを表示して送る」を押したままにしてください");
+  const fail = m => { if (rxDone) return; rxDone = true; clearTimeout(rxTimer); try { rxPeer && rxPeer.destroy(); } catch (e) {} rxView("fail", upd ? "更新できませんでした" : "受け取れませんでした", m); };
   try {
+    const have = upd ? await idbGet("faines") : null;
     await loadScript("vendor/peerjs.min.js");
     const peer = rxPeer = new Peer({ debug: 0 });
     rxTimer = setTimeout(() => fail("PCから応答がありません。PCのツールが開いたままか、PCがインターネットにつながっているか確認してください。"), 30000);
-    peer.on("error", e => fail(peerErr(e)));
+    peer.on("error", e => fail(peerErr(e, upd)));
     peer.on("open", () => {
-      const conn = peer.connect(PEER_PREFIX + code, { reliable: true, serialization: "raw" });
+      const conn = peer.connect(peerId, { reliable: true, serialization: "raw" });
       const chunks = []; let meta = null, got = 0;
-      conn.on("open", () => { clearTimeout(rxTimer); rxTimer = setTimeout(() => fail("途中で止まりました。もう一度お試しください。"), 60000); rxView("recv", "点数表を受信中…", "そのままお待ちください", 0); });
+      const bye = () => setTimeout(() => { try { peer.destroy(); } catch (e) {} }, 1500);
+      conn.on("open", () => {
+        clearTimeout(rxTimer);
+        if (upd) { rxTimer = setTimeout(() => fail("PCから返事がありません。PCのツールの画面が開いているか確認してください。"), 20000); conn.send(JSON.stringify({ t: "chk", sha: (have && have.sha) || "" })); }
+        else { rxTimer = setTimeout(() => fail("途中で止まりました。もう一度お試しください。"), 60000); rxView("recv", "点数表を受信中…", "そのままお待ちください", 0); }
+      });
       conn.on("data", async d => {
         if (rxDone) return;
         if (typeof d === "string") {
           let m = null; try { m = JSON.parse(d); } catch (e) {}
-          if (m && m.t === "meta") meta = m;
-          else if (m && m.t === "end") {
+          if (!m) return;
+          if (m.t === "ng") { fail("PC側でエラー: " + String(m.msg || "")); }
+          else if (m.t === "info") {
+            clearTimeout(rxTimer);
+            if (m.same) { rxDone = true; rxView("done", "最新です", V.length + "車種。PCの点数表と同じ内容です。"); bye(); }
+            else { rxTimer = setTimeout(() => fail("途中で止まりました。もう一度お試しください。"), 60000); rxView("recv", "更新を受信中…", "そのままお待ちください", 0); conn.send(JSON.stringify({ t: "get" })); }
+          }
+          else if (m.t === "meta") meta = m;
+          else if (m.t === "end") {
             try {
               clearTimeout(rxTimer);
               if (!meta || got !== meta.size) throw new Error("データが途中までしか届きませんでした（" + got + "/" + (meta ? meta.size : "?") + "）。");
@@ -1195,24 +1266,37 @@ async function rxStart(raw) {
               if (meta.sha && h && meta.sha !== h) throw new Error("データが壊れていました。もう一度お試しください。");
               rxView("recv", "保存しています…", "", 100);
               const dd = await readDataFile(new File([blob], "tensu-data.json.gz"));
-              await idbSet("faines", { vehicles: dd.vehicles, built: dd.built, at: Date.now() });
+              await idbSet("faines", { vehicles: dd.vehicles, built: dd.built, at: Date.now(), sha: meta.sha || "" });
+              if (/^[A-Z0-9]{16}$/.test(meta.pair || "")) lsSet(PAIR_PH, meta.pair);                 // 次回からスマホ側だけで更新できる
               V = dd.vehicles; buildSel(); renderVehList(); updChip(); showIncoming();
               rxDone = true; try { conn.send(JSON.stringify({ t: "ok" })); } catch (e) {}
               dataMsg("受け取りました：<b>" + V.length + "</b> 車種。PC無しで使えます。", "ok");
-              rxView("done", "受け取りました", V.length + "車種の点数表が、このスマホの中に入りました。以後はPC無しで使えます。");
-              setTimeout(() => { try { peer.destroy(); } catch (e) {} }, 1500);
+              const add = V.length - before;
+              rxView("done", upd ? "更新しました" : "受け取りました", upd ? V.length + "車種になりました" + (add > 0 ? "（+" + add + "車種）" : "") + "。" : V.length + "車種の点数表が、このスマホの中に入りました。次からは、右上の更新ボタンでスマホだけで更新できます。");
+              bye();
             } catch (e) { try { conn.send(JSON.stringify({ t: "ng", msg: String(e.message || e) })); } catch (e2) {} fail(String(e.message || e)); }
           }
           return;
         }
         chunks.push(d); got += d.byteLength || d.size || 0;
-        if (meta && meta.size) rxView("recv", "点数表を受信中…", Math.round(got / 1024) + " / " + Math.round(meta.size / 1024) + " KB", Math.min(99, Math.round(got / meta.size * 100)));
+        if (meta && meta.size) rxView("recv", upd ? "更新を受信中…" : "点数表を受信中…", Math.round(got / 1024) + " / " + Math.round(meta.size / 1024) + " KB", Math.min(99, Math.round(got / meta.size * 100)));
       });
       conn.on("close", () => { if (!rxDone) setTimeout(() => { if (!rxDone) fail("接続が切れました。もう一度お試しください。"); }, 1500); });
-      conn.on("error", e => fail(peerErr(e)));
+      conn.on("error", e => fail(peerErr(e, upd)));
     });
   } catch (e) { fail(String(e.message || e)); }
 }
+function rxStart(raw) {
+  const code = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (code.length !== 8) { toast("コードは8文字です"); return; }
+  return rxRun(PEER_PREFIX + code, false);
+}
+function updStart() {
+  const sec = lsGet(PAIR_PH, "");
+  if (!/^[A-Z0-9]{16}$/.test(sec)) { openSheet("dataBox"); toast("先にPCのQRで一度受け取ってください"); return; }
+  return rxRun(PAIR_PREFIX + sec, true);
+}
+$("btnUpd").onclick = updStart; $("btnUpd2").onclick = updStart;
 $("btnRx").onclick = () => rxStart($("rxCode").value);
 $("rxCode").addEventListener("keydown", e => { if (e.key === "Enter") rxStart($("rxCode").value); });
 const _rxm = location.hash.match(/[#&]r=([A-Za-z0-9]+)/);                       // PCのQRから開いたとき: 自動で受け取りを始める

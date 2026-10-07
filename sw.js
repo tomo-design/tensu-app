@@ -1,7 +1,7 @@
 "use strict";
 /* 作業点数ツール: アプリ版(スマホ単体)用のService Worker。画面(index.html)だけをオフライン用に保存する。
    点数表データは端末内(IndexedDB)にあり、ここでは扱わない。外部通信(Gemini)や /api /data には触れない。 */
-const CACHE = "tensu-app-v2";
+const CACHE = "tensu-app-v3";
 const ASSETS = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "vendor/peerjs.min.js"];
 
 self.addEventListener("install", e => {
