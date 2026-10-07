@@ -423,7 +423,10 @@ body.mode-app .noserv-only{display:block}
         <div><label>点単価（円/点）</label><input type="text" id="setRate" inputmode="numeric" placeholder="例: 7500"></div>
         <div><label>店名（印刷用）</label><input type="text" id="setShop" placeholder="例: ○○自動車整備"></div>
       </div>
-      <p class="hint" style="margin:12px 0 0">キー・点単価・店名は、この端末のブラウザ内にだけ保存されます。APIキーは <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> で無料で取れます。</p>
+      <label>用語メモ（この工場の略号・セット作業）</label>
+      <textarea id="setGloss" rows="5" placeholder="例: 車検キット = ハブ・オイル・シール交換 + …"></textarea>
+      <div class="hint" style="margin-top:6px">紙に書かれた言葉を、点数表のどの作業に展開するかをAIに教えます。1行に1件。書き換えるとすぐ反映されます。</div>
+      <p class="hint" style="margin:12px 0 0">キー・点単価・店名・用語メモは、この端末のブラウザ内にだけ保存されます。APIキーは <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> で無料で取れます。</p>
     </section>
 
     <section id="dataBox" class="card noserv-only">
@@ -496,7 +499,7 @@ body.mode-app .noserv-only{display:block}
 /* ========== 基本 ========== */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const LSK = { key: "tensu_key", rate: "tensu_rate", shop: "tensu_shop", saved: "tensu_saved", veh: "tensu_veh" };
+const LSK = { gloss: "tensu_gloss", key: "tensu_key", rate: "tensu_rate", shop: "tensu_shop", saved: "tensu_saved", veh: "tensu_veh" };
 const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 let V = (window.FAINES && window.FAINES.vehicles) || [];
@@ -512,6 +515,9 @@ let S = { vid: "", photos: [], lines: [], unmatched: [], curId: null };
 const veh = () => V.find(v => v.id === S.vid) || null;
 
 /* ========== 設定 ========== */
+const DEFAULT_GLOSS = "車検キット = ハブ・オイル・シール交換(ハブ・シール・キット交換)に、ブレーキがドラム式ならカップ・シール・キット交換(ホイール・シリンダO/H)を加え、ブレーキ清掃も含むセット作業。車検キットと書かれていたら、これらを別々の行に展開して選ぶ。";
+$("setGloss").value = lsGet(LSK.gloss, DEFAULT_GLOSS); $("setGloss").oninput = () => lsSet(LSK.gloss, $("setGloss").value.trim());
+const gloss = () => lsGet(LSK.gloss, DEFAULT_GLOSS).trim();
 $("setKey").value = lsGet(LSK.key, ""); $("setRate").value = lsGet(LSK.rate, ""); $("setShop").value = lsGet(LSK.shop, "");
 $("setKey").oninput = () => { lsSet(LSK.key, $("setKey").value.trim()); refreshStart(); };
 $("setRate").oninput = () => { lsSet(LSK.rate, String(numOf($("setRate").value) || "")); calc(); };
@@ -627,6 +633,7 @@ async function readPhotos() {
     "次の画像は日本の自動車整備工場の紙カルテ(手書き・伝票)です。整備の文脈で丁寧に判読し、JSONだけで返してください(説明・コードフェンス不要)。",
     "画像が複数枚でも同じ1件の整備です。統合してください。書かれていない情報は足さないこと。",
     "略号: E/O=エンジンオイル, O/E=オイルエレメント(フィルタ), B/O=ブレーキフルード, M/O=ミッションオイル, D/O=デフオイル, L/L=クーラント, O/H=オーバーホール, 脱着=取外し・取付け, T/M=トランスミッション。",
+    gloss() ? "この工場の用語メモ(書かれた言葉はそのまま works に残し、点数表への展開は後の工程で行う): " + gloss() : "",
     "works: 実施した作業を1件ずつ(原文に近い短い言葉)。1行に複数作業が書かれていれば分ける。q=数量(本数・個数・軸数・輪数。書かれていなければ1)。",
     "parts: 交換部品・使用材料 [{n:部品名, q:数量と単位をそのまま(例 \"20L\" \"2\")}]。",
     "head: date(YYYY-MM-DD。和暦も西暦に。年が無ければ空文字), odo(走行距離km 数値), plate(登録番号), customer(お客様・使用者名), staff(担当者), note(申し送り・特記)。",
@@ -635,7 +642,7 @@ async function readPhotos() {
     "written_points: 紙に作業ごとの点数が書かれていれば [{i:worksの番号(0始まり), p:数値}]。無ければ [] (推測しない)。",
     "点数表リスト:\n" + list,
     '形式: {"works":[{"t":"","q":1}],"parts":[{"n":"","q":""}],"head":{"date":"","odo":null,"plate":"","customer":"","staff":"","note":""},"vehicle_text":"","vehicle_id":null,"written_points":[]}'
-  ].join("\n");
+  ].filter(x => x !== "").join("\n");
   const parts = [{ text: prompt }].concat(S.photos.map(d => ({ inline_data: { mime_type: "image/jpeg", data: d.slice(d.indexOf("base64,") + 7) } })));
   const o = parseJson(await gemini(parts, { think: 512 }));
   if (!o || !Array.isArray(o.works)) throw new Error("写真から作業を読み取れませんでした。写真を撮り直してみてください。");
@@ -661,11 +668,12 @@ async function matchWorks(works) {
     "・変種(エンジン別・仕様別)がある行は、車両に合う変種名を variant に入れる。分からなければ null。",
     "・追加点数(行の『追加:』)は、紙の記載や作業内容から該当する時だけ opts に名前を入れる(例: アンダ・カバー付の車、リターダ付など。不明なら入れない)。",
     "・紙に書かれた作業の意図に最も近い行を選ぶ。曖昧で確信が持てない時は confidence を low にして、候補を1つだけ選ぶ。",
+    gloss() ? "【用語メモ】この工場のセット作業です。該当する作業は、メモの内容どおり複数の行に展開して選ぶ(rows に複数)。ドラム式かディスク式かが紙や車両から分からないときは、ドラム式のぶん(ホイール・シリンダO/H等)は confidence を low にして note に書く。\n" + gloss() : "",
     "車両: " + vLabel(v),
     "作業(0始まりの番号つき):\n" + works.map((w, i) => i + ". " + w.t + (w.q > 1 ? " ×" + w.q : "")).join("\n"),
     "点数表(候補)  形式: idx|区分|作業番号|作業項目|点数|変種|追加\n" + candidateText(v),
     '出力はJSONのみ: {"results":[{"i":0,"rows":[{"idx":0,"qty":1,"variant":null,"opts":[]}],"confidence":"high|mid|low","note":""}]}'
-  ].join("\n");
+  ].filter(x => x !== "").join("\n");
   const o = parseJson(await gemini([{ text: prompt }], { think: 1024 }));
   if (!o || !Array.isArray(o.results)) throw new Error("点数表との照合結果を読み取れませんでした。もう一度お試しください。");
   return o.results;
@@ -940,7 +948,7 @@ function sheetHtml(s) {
   const rows = (s.lines || []).map((l, i) => {
     const f = l.fix; if (!f) return "";
     const pt = f.pts; total += pt || 0;
-    const sub = [l.variant, (l.opts || []).length ? (l.opts || []).join("・") + " 加算" : ""].filter(Boolean).join(" ／ ");
+    const sub = [/車検キット/.test(l.src || "") ? "車検キットに含む" : "", l.variant, (l.opts || []).length ? (l.opts || []).join("・") + " 加算" : ""].filter(Boolean).join(" ／ ");
     return '<tr><td class="no">' + (i + 1) + '</td><td class="cd">' + t(f.c) + '</td><td>' + t(f.n) + (sub ? '<span class="psSub">' + t(sub) + '</span>' : "") + '</td><td class="r qt">' + (l.qty !== 1 ? l.qty : "") + '</td><td class="r pt">' + fmt(pt) + '</td>' + (rt ? '<td class="r wg">' + (pt == null ? "—" : yen(pt * rt)) + '</td>' : "") + '</tr>';
   }).join("");
   const parts = String(h.parts || "").split(/\n+/).map(x => x.trim()).filter(Boolean);
